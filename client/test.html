@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>اختبار Socket.IO - Wansa</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body { font-family: Arial; max-width: 700px; margin: 20px auto; padding: 20px; background: #f0f2f5; }
+    h1 { color: #075E54; }
+    .box { background: white; padding: 20px; border-radius: 10px; margin: 15px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    input, button { padding: 10px; font-size: 14px; border-radius: 6px; border: 1px solid #ccc; }
+    button { background: #25D366; color: white; border: none; cursor: pointer; }
+    button:hover { background: #128C7E; }
+    #log { background: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 8px; font-family: monospace; height: 250px; overflow-y: auto; margin-top: 15px; }
+    #status { padding: 10px; border-radius: 6px; margin-bottom: 15px; }
+    .connected { background: #d4edda; color: #155724; }
+    .disconnected { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>⚡ اختبار Socket.IO - Wansa</h1>
+
+  <div class="box">
+    <div id="status" class="disconnected">🔴 غير متصل</div>
+
+    <div style="margin-bottom: 15px;">
+      <input id="userIdInput" placeholder="User ID" value="" style="width: 70%;">
+      <button onclick="connectUser()">اتصال كمستخدم</button>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <input id="chatIdInput" placeholder="Chat ID" style="width: 70%;">
+      <button onclick="joinChat()">الانضمام للمحادثة</button>
+    </div>
+
+    <div>
+      <input id="msgInput" placeholder="اكتب رسالة..." style="width: 70%;">
+      <button onclick="sendMsg()">إرسال</button>
+    </div>
+  </div>
+
+  <div id="log"></div>
+
+<script>
+  const socket = io();
+  const log = (msg) => {
+    const div = document.getElementById('log');
+    div.innerHTML += `[${new Date().toLocaleTimeString()}] ${msg}<br>`;
+    div.scrollTop = div.scrollHeight;
+  };
+
+  socket.on('connect', () => {
+    document.getElementById('status').className = 'connected';
+    document.getElementById('status').textContent = '🟢 متصل - ' + socket.id;
+    log('✅ متصل بـ Socket.IO');
+  });
+
+  socket.on('disconnect', () => {
+    document.getElementById('status').className = 'disconnected';
+    document.getElementById('status').textContent = '🔴 غير متصل';
+    log('❌ قطع الاتصال');
+  });
+
+  socket.on('newMessage', (msg) => {
+    log('📩 رسالة جديدة: ' + JSON.stringify(msg.content));
+  });
+
+  socket.on('onlineUsers', (users) => {
+    log('👥 المستخدمون المتصلون: ' + users.length);
+  });
+
+  socket.on('error', (err) => {
+    log('⚠️ خطأ: ' + err.message);
+  });
+
+  function connectUser() {
+    const userId = document.getElementById('userIdInput').value.trim();
+    if (!userId) return log('⚠️ أدخل User ID');
+    socket.emit('userOnline', userId);
+    log('🟢 تم إرسال userOnline لـ ' + userId);
+  }
+
+  function joinChat() {
+    const chatId = document.getElementById('chatIdInput').value.trim();
+    if (!chatId) return log('⚠️ أدخل Chat ID');
+    socket.emit('joinChat', chatId);
+    log('📥 تم الانضمام إلى ' + chatId);
+  }
+
+  function sendMsg() {
+    const content = document.getElementById('msgInput').value.trim();
+    const senderId = document.getElementById('userIdInput').value.trim();
+    const chatId = document.getElementById('chatIdInput').value.trim();
+    if (!content || !senderId || !chatId) return log('⚠️ املأ كل الحقول');
+    socket.emit('sendMessage', { chatId, senderId, content });
+    log('📤 تم إرسال: ' + content);
+    document.getElementById('msgInput').value = '';
+  }
+</script>
+</body>
+</html>
