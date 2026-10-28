@@ -10,24 +10,29 @@ const Message = require('../models/Message');
 const User = require('../models/User');
 
 // ==========================================
-// GET /api/chats/users - جلب كل المستخدمين (للبحث)
+// GET /api/chats/users - البحث (فقط بالهاتف أو البريد)
 // ==========================================
 router.get('/users', auth, async (req, res) => {
   try {
     const { search } = req.query;
-    const query = { _id: { $ne: req.userId } };
 
-    if (search) {
-      query.$or = [
-        { username: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-        { phone: { $regex: search, $options: 'i' } }
-      ];
+    // إذا لم يكن هناك بحث، أرجع قائمة فارغة
+    if (!search || !search.trim()) {
+      return res.json([]);
     }
 
-    const users = await User.find(query)
+    const searchTerm = search.trim();
+
+    // البحث فقط في الهاتف أو البريد
+    const users = await User.find({
+      _id: { $ne: req.userId }, // استبعاد نفسي
+      $or: [
+        { email: { $regex: searchTerm, $options: 'i' } },
+        { phone: { $regex: searchTerm, $options: 'i' } }
+      ]
+    })
       .select('-password')
-      .limit(50);
+      .limit(20);
 
     res.json(users);
   } catch (err) {
@@ -35,6 +40,7 @@ router.get('/users', auth, async (req, res) => {
     res.status(500).json({ error: 'حدث خطأ في السيرفر' });
   }
 });
+
 // ==========================================
 // POST /api/chats - إنشاء أو جلب محادثة فردية
 // ==========================================
@@ -50,14 +56,12 @@ router.post('/', auth, async (req, res) => {
       return res.status(400).json({ error: 'لا يمكنك محادثة نفسك' });
     }
 
-    // البحث عن محادثة موجودة
     let chat = await Chat.findOne({
       isGroup: false,
       members: { $all: [req.userId, userId], $size: 2 }
     }).populate('members', '-password')
       .populate('lastMessage');
 
-    // إنشاء محادثة جديدة إن لم توجد
     if (!chat) {
       chat = await Chat.create({
         isGroup: false,
@@ -86,7 +90,6 @@ router.post('/group', auth, async (req, res) => {
       });
     }
 
-    // إضافة المُنشئ تلقائياً
     const allMembers = [...new Set([...members, req.userId.toString()])];
 
     const chat = await Chat.create({
