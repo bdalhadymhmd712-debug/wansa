@@ -38,11 +38,120 @@
     .user-details h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
     .user-status { font-size: 12px; opacity: 0.85; display: flex; align-items: center; gap: 5px; }
     .status-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 5px var(--accent); }
-    .header-actions { display: flex; gap: 8px; }
+    .header-actions { display: flex; gap: 6px; position: relative; }
     .icon-btn { width: 38px; height: 38px; background: rgba(255,255,255,0.15); border: none; border-radius: 50%; color: var(--text-header); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; position: relative; }
     .icon-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
     .notif-badge { position: absolute; top: -4px; right: -4px; background: var(--danger); color: #fff; border-radius: 10px; min-width: 18px; height: 18px; font-size: 11px; display: none; align-items: center; justify-content: center; padding: 0 5px; font-weight: 700; border: 2px solid var(--bg-header); }
     .notif-badge.show { display: flex; }
+
+    /* ===== قائمة الثلاث نقاط ===== */
+    .dropdown-menu {
+      position: absolute;
+      top: 48px;
+      left: 0;
+      background: var(--bg-modal);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px var(--shadow-strong);
+      padding: 6px;
+      min-width: 160px;
+      z-index: 100;
+      display: none;
+      animation: slideDown 0.15s ease;
+    }
+    .dropdown-menu.show { display: block; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    .dropdown-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-primary);
+      transition: background 0.15s;
+    }
+    .dropdown-item:hover { background: var(--bg-hover); }
+    .dropdown-item.danger { color: var(--danger); }
+
+    /* ===== القائمة الجانبية (Drawer) ===== */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .drawer-overlay.show { display: block; opacity: 1; }
+    
+    .drawer {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 100%;
+      max-width: 380px;
+      height: 100%;
+      background: var(--bg-sidebar);
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: -5px 0 30px var(--shadow-strong);
+    }
+    .drawer.open { right: 0; }
+
+    .drawer-header {
+      background: var(--bg-header);
+      color: var(--text-header);
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .drawer-header h2 { font-size: 18px; font-weight: 600; }
+    .drawer-close {
+      background: none;
+      border: none;
+      color: var(--text-header);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+    }
+    .drawer-close:hover { background: rgba(255,255,255,0.15); }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .drawer-item {
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      cursor: pointer;
+      transition: background 0.15s;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-primary);
+    }
+    .drawer-item:hover { background: var(--bg-hover); }
+    .drawer-item-icon {
+      width: 40px; height: 40px;
+      background: var(--bg-hover);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .drawer-item-text { flex: 1; font-size: 15px; font-weight: 500; }
+    .drawer-item.danger { color: var(--danger); }
+    .drawer-item.danger .drawer-item-icon { color: var(--danger); background: rgba(220, 38, 38, 0.1); }
 
     .search-box { padding: 10px 15px; background: var(--bg-input); border-bottom: 1px solid var(--border); }
     .search-input-wrapper { position: relative; display: flex; align-items: center; }
@@ -90,33 +199,35 @@
     .reply-quote strong { display: block; font-size: 11px; color: var(--accent); margin-bottom: 2px; }
     .reply-quote p { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .message.sent .reply-quote { background: var(--bg-quote-sent); }
-
-    /* ===== الوسائط ===== */
     .message-media { max-width: 320px; border-radius: 6px; overflow: hidden; cursor: pointer; background: #000; display: block; margin: 2px 0; }
     .message-media img, .message-media video { width: 100%; max-height: 400px; display: block; object-fit: cover; }
-    .message-media video { cursor: pointer; }
     .file-attachment { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-quote); border-radius: 6px; margin: 4px 6px; max-width: 320px; cursor: pointer; }
     .file-icon { width: 44px; height: 44px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 22px; flex-shrink: 0; }
     .file-info { flex: 1; min-width: 0; }
     .file-name { font-size: 13px; color: var(--text-primary); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .file-size { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
 
-    /* ===== 🎤 مشغل الرسالة الصوتية ===== */
     .audio-message { display: flex; align-items: center; gap: 10px; padding: 8px 12px; min-width: 250px; max-width: 320px; }
     .audio-play-btn { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; transition: all 0.2s; }
     .audio-play-btn:hover { background: var(--accent-dark); transform: scale(1.05); }
     .message.sent .audio-play-btn { background: var(--accent); }
-    .audio-waveform { flex: 1; display: flex; align-items: center; gap: 2px; height: 30px; cursor: pointer; position: relative; }
+    .audio-waveform { flex: 1; display: flex; align-items: center; gap: 2px; height: 30px; cursor: pointer; }
     .audio-bar { width: 3px; background: var(--text-secondary); border-radius: 2px; transition: all 0.2s; opacity: 0.4; }
     .audio-bar.played { background: var(--accent); opacity: 1; }
     .message.sent .audio-bar { background: var(--text-secondary); }
     .message.sent .audio-bar.played { background: #fff; }
     .audio-info { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 40px; }
     .audio-time { font-size: 11px; color: var(--text-secondary); font-weight: 600; }
-    .audio-progress-line { width: 100%; height: 2px; background: var(--bg-quote); border-radius: 1px; overflow: hidden; position: relative; }
-    .audio-progress-fill { height: 100%; background: var(--accent); width: 0; transition: width 0.1s linear; }
 
-    /* ===== 🔴 شريط التسجيل ===== */
+    .typing-indicator { padding: 8px 20px; font-size: 12px; color: var(--text-secondary); font-style: italic; display: none; background: var(--bg-sidebar); z-index: 5; }
+    .typing-indicator.show { display: block; }
+    .reply-bar { display: none; background: var(--bg-input); padding: 10px 20px; border-right: 4px solid var(--accent); align-items: center; justify-content: space-between; gap: 10px; }
+    .reply-bar.show { display: flex; }
+    .reply-bar-content { flex: 1; min-width: 0; }
+    .reply-bar-title { font-size: 12px; color: var(--accent); font-weight: 700; }
+    .reply-bar-text { font-size: 13px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .reply-bar-close { width: 28px; height: 28px; background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; border-radius: 50%; }
+
     .recording-bar { display: none; background: var(--bg-input); padding: 12px 20px; align-items: center; gap: 12px; border-top: 1px solid var(--border); z-index: 11; }
     .recording-bar.show { display: flex; }
     .recording-btn { width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; transition: all 0.2s; }
@@ -130,7 +241,6 @@
     .recording-time { font-size: 15px; font-weight: 700; color: var(--danger); font-variant-numeric: tabular-nums; }
     .recording-text { font-size: 13px; color: var(--text-secondary); }
 
-    /* ===== منطقة الإدخال ===== */
     .message-input-area { background: var(--bg-input); padding: 12px 20px; display: flex; gap: 8px; align-items: center; z-index: 10; }
     .message-input-area input { flex: 1; padding: 12px 18px; border: none; border-radius: 24px; background: var(--bg-input-field); color: var(--text-primary); font-size: 15px; }
     .message-input-area input::placeholder { color: var(--text-secondary); }
@@ -190,15 +300,6 @@
     .upload-progress.show { display: block; }
     .upload-progress-fill { height: 100%; background: var(--accent); width: 0; transition: width 0.3s; }
 
-    .typing-indicator { padding: 8px 20px; font-size: 12px; color: var(--text-secondary); font-style: italic; display: none; background: var(--bg-sidebar); z-index: 5; }
-    .typing-indicator.show { display: block; }
-    .reply-bar { display: none; background: var(--bg-input); padding: 10px 20px; border-right: 4px solid var(--accent); align-items: center; justify-content: space-between; gap: 10px; }
-    .reply-bar.show { display: flex; }
-    .reply-bar-content { flex: 1; min-width: 0; }
-    .reply-bar-title { font-size: 12px; color: var(--accent); font-weight: 700; }
-    .reply-bar-text { font-size: 13px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .reply-bar-close { width: 28px; height: 28px; background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 18px; border-radius: 50%; }
-
     .toast { position: fixed; top: 20px; right: 50%; transform: translateX(50%) translateY(-100px); background: var(--bg-header); color: var(--text-header); padding: 12px 24px; border-radius: 8px; box-shadow: 0 10px 30px var(--shadow-strong); z-index: 9999; opacity: 0; transition: all 0.3s; font-size: 14px; }
     .toast.show { transform: translateX(50%) translateY(0); opacity: 1; }
     .toast.error { background: var(--danger); }
@@ -247,10 +348,17 @@
         <div class="header-actions">
           <button class="icon-btn" id="themeToggle" title="تبديل الوضع">🌙</button>
           <button class="icon-btn" id="notifBtn" title="الإشعارات">🔔<span class="notif-badge" id="notifBadge">0</span></button>
-          <button class="icon-btn" id="newChatBtn" title="محادثة جديدة">➕</button>
-          <button class="icon-btn" id="logoutBtn" title="تسجيل الخروج">🚪</button>
+          
+          <!-- زر الثلاث نقاط -->
+          <button class="icon-btn" id="menuBtn" title="القائمة">⋮</button>
+          
+          <!-- القائمة المنسدلة -->
+          <div class="dropdown-menu" id="dropdownMenu">
+            <div class="dropdown-item" id="openSettingsBtn">⚙️ الإعدادات</div>
+          </div>
         </div>
       </div>
+
       <div class="search-box">
         <div class="search-input-wrapper">
           <span class="search-icon">🔍</span>
@@ -327,6 +435,41 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- ===== القائمة الجانبية (Drawer) ===== -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer" id="settingsDrawer">
+    <div class="drawer-header">
+      <h2>الإعدادات</h2>
+      <button class="drawer-close" id="closeDrawerBtn">✕</button>
+    </div>
+    <div class="drawer-body">
+      <div class="drawer-item" id="profileBtn">
+        <div class="drawer-item-icon">👤</div>
+        <div class="drawer-item-text">الملف الشخصي</div>
+      </div>
+      <div class="drawer-item" id="statusBtn">
+        <div class="drawer-item-icon">🟢</div>
+        <div class="drawer-item-text">إنشاء حالة</div>
+      </div>
+      <div class="drawer-item" id="groupBtn">
+        <div class="drawer-item-icon">👥</div>
+        <div class="drawer-item-text">إنشاء مجموعة</div>
+      </div>
+      <div class="drawer-item" id="privacyBtn">
+        <div class="drawer-item-icon">🔒</div>
+        <div class="drawer-item-text">الخصوصية</div>
+      </div>
+      <div class="drawer-item danger" id="deleteAccountBtn">
+        <div class="drawer-item-icon">🗑️</div>
+        <div class="drawer-item-text">حذف الحساب</div>
+      </div>
+      <div class="drawer-item danger" id="logoutBtn">
+        <div class="drawer-item-icon">🚪</div>
+        <div class="drawer-item-text">تسجيل خروج</div>
+      </div>
+    </div>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -477,6 +620,14 @@ const lightbox = $('lightbox');
 const lightboxClose = $('lightboxClose');
 const lightboxContent = $('lightboxContent');
 
+// الثلاث نقاط والقائمة
+const menuBtn = $('menuBtn');
+const dropdownMenu = $('dropdownMenu');
+const openSettingsBtn = $('openSettingsBtn');
+const settingsDrawer = $('settingsDrawer');
+const drawerOverlay = $('drawerOverlay');
+const closeDrawerBtn = $('closeDrawerBtn');
+
 // ==========================================
 // الثيم
 // ==========================================
@@ -499,6 +650,60 @@ themeToggle.addEventListener('click', () => {
 
 myUsernameEl.textContent = myUsername || 'أنا';
 myAvatar.textContent = (myUsername || 'أ').charAt(0).toUpperCase();
+
+// ==========================================
+// الثلاث نقاط والقائمة الجانبية
+// ==========================================
+menuBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  dropdownMenu.classList.toggle('show');
+});
+
+document.addEventListener('click', (e) => {
+  if (!dropdownMenu.contains(e.target) && e.target !== menuBtn) {
+    dropdownMenu.classList.remove('show');
+  }
+});
+
+openSettingsBtn.addEventListener('click', () => {
+  dropdownMenu.classList.remove('show');
+  settingsDrawer.classList.add('open');
+  drawerOverlay.classList.add('show');
+  history.pushState({ view: 'settings' }, '', '#settings');
+});
+
+function closeSettingsDrawer() {
+  settingsDrawer.classList.remove('open');
+  drawerOverlay.classList.remove('show');
+}
+
+closeDrawerBtn.addEventListener('click', () => {
+  closeSettingsDrawer();
+  history.back();
+});
+
+drawerOverlay.addEventListener('click', () => {
+  closeSettingsDrawer();
+  history.back();
+});
+
+// أزرار القائمة الجانبية (سنضع أفعالها لاحقاً)
+$('profileBtn').addEventListener('click', () => { showToast('👤 صفحة الملف الشخصي ستأتي قريباً'); });
+$('statusBtn').addEventListener('click', () => { showToast('🟢 صفحة الحالة ستأتي قريباً'); });
+$('groupBtn').addEventListener('click', () => { showToast('👥 إنشاء المجموعة سيأتي قريباً'); });
+$('privacyBtn').addEventListener('click', () => { showToast('🔒 الخصوصية ستأتي قريباً'); });
+$('deleteAccountBtn').addEventListener('click', () => {
+  if (confirm('⚠️ هل أنت متأكد من حذف حسابك نهائياً؟ لا يمكن التراجع عن هذا الإجراء!')) {
+    showToast('🗑️ خاصية الحذف ستأتي قريباً', 'error');
+  }
+});
+$('logoutBtn').addEventListener('click', () => {
+  if (confirm('هل تريد تسجيل الخروج؟')) {
+    localStorage.clear();
+    socket.disconnect();
+    window.location.href = '/login.html';
+  }
+});
 
 // ==========================================
 // الإشعارات
@@ -635,38 +840,36 @@ socket.on('messageEdited', ({ messageId, content }) => {
 socket.on('error', (err) => showToast(err.message || 'حدث خطأ', 'error'));
 
 // ==========================================
-// معالجة زر الرجوع (تم الإصلاح هنا)
+// معالجة زر الرجوع
 // ==========================================
 window.addEventListener('popstate', () => {
-  // 1. إذا كان هناك قائمة سياق مفتوحة
+  if (settingsDrawer.classList.contains('open')) {
+    closeSettingsDrawer();
+    return;
+  }
   if (contextMenu.classList.contains('show')) {
     closeContextMenu();
     return;
   }
-  // 2. إذا كانت هناك صورة مكبرة
   if (lightbox.classList.contains('show')) {
     lightbox.classList.remove('show');
     lightboxContent.innerHTML = '';
     return;
   }
-  // 3. إذا كانت نافذة التعديل
   if (editModal.classList.contains('show')) {
     editModal.classList.remove('show');
     editingMessage = null;
     return;
   }
-  // 4. إذا كانت معاينة الملف
   if (uploadPreview.classList.contains('show')) {
     closePreview();
     return;
   }
-  // 5. إذا كان هناك رد
   if (replyBar.classList.contains('show')) {
     replyToMessage = null;
     replyBar.classList.remove('show');
     return;
   }
-  // 6. إذا كانت دردشة مفتوحة
   if (currentChat) {
     closeChat();
     return;
@@ -717,11 +920,9 @@ mediaInput.addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
   if (file.size > 25 * 1024 * 1024) { showToast('⚠️ الحد 25MB', 'error'); mediaInput.value = ''; return; }
-
   const isImage = file.type.startsWith('image/');
   const isVideo = file.type.startsWith('video/');
   if (!isImage && !isVideo) { showToast('⚠️ صور وفيديو فقط', 'error'); mediaInput.value = ''; return; }
-
   pendingFile = file;
   previewCaption.value = '';
   const url = URL.createObjectURL(file);
@@ -765,25 +966,21 @@ previewSend.addEventListener('click', async () => {
     const formData = new FormData();
     formData.append('file', file);
     uploadProgressFill.style.width = '50%';
-
     const uploadRes = await fetch(`${API_URL}/api/upload`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
       body: formData
     });
     uploadProgressFill.style.width = '80%';
-
     if (!uploadRes.ok) {
       const errData = await uploadRes.json();
       throw new Error(errData.error || 'فشل الرفع');
     }
     const uploadData = await uploadRes.json();
     uploadProgressFill.style.width = '100%';
-
     let type = 'file';
     if (file.type.startsWith('image/')) type = 'image';
     else if (file.type.startsWith('video/')) type = 'video';
-
     const messageData = {
       chatId: currentChat._id,
       senderId: myUserId,
@@ -795,7 +992,6 @@ previewSend.addEventListener('click', async () => {
       fileMimeType: uploadData.fileMimeType
     };
     if (replyToMessage) messageData.replyTo = replyToMessage._id;
-
     socket.emit('sendMessage', messageData);
     replyToMessage = null;
     replyBar.classList.remove('show');
@@ -830,12 +1026,10 @@ async function startRecording() {
     const options = mimeType ? { mimeType } : {};
     mediaRecorder = new MediaRecorder(recordingStream, options);
     audioChunks = [];
-
     mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) audioChunks.push(e.data); };
     mediaRecorder.onstop = () => {
       if (recordingStream) { recordingStream.getTracks().forEach(t => t.stop()); recordingStream = null; }
     };
-
     mediaRecorder.start();
     isRecording = true;
     recordingStartTime = Date.now();
@@ -846,7 +1040,6 @@ async function startRecording() {
     cameraBtn.disabled = true;
     recordingTime.textContent = '0:00';
     history.pushState({ view: 'recording' }, '', '#recording');
-
     recordingTimer = setInterval(() => {
       const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
       const min = Math.floor(elapsed / 60);
@@ -871,7 +1064,6 @@ function stopRecording(send) {
   recordingBar.classList.remove('show');
   messageInput.disabled = false;
   cameraBtn.disabled = false;
-
   if (send && duration >= 1) {
     setTimeout(() => sendAudioRecording(duration), 200);
   } else {
@@ -891,11 +1083,9 @@ async function sendAudioRecording(duration) {
     if (blobType.includes('mp4')) ext = 'mp4';
     else if (blobType.includes('ogg')) ext = 'ogg';
     const file = new File([audioBlob], `voice-${Date.now()}.${ext}`, { type: blobType });
-
     const formData = new FormData();
     formData.append('file', file);
     showMiniToast('📤 جاري الرفع...');
-
     const uploadRes = await fetch(`${API_URL}/api/upload`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
@@ -906,7 +1096,6 @@ async function sendAudioRecording(duration) {
       throw new Error(errData.error || 'فشل الرفع');
     }
     const uploadData = await uploadRes.json();
-
     const messageData = {
       chatId: currentChat._id,
       senderId: myUserId,
@@ -1028,8 +1217,6 @@ async function openChat(chat) {
   socket.emit('joinChat', chat._id);
   await loadMessages(chat._id);
   clearUnread(chat._id);
-
-  // إضافة خطوة للرجوع
   history.pushState({ view: 'chat' }, '', '#chat');
 
   if (window.innerWidth <= 768) sidebar.classList.add('hidden');
@@ -1063,12 +1250,10 @@ async function loadMessages(chatId) {
 // ==========================================
 function appendMessageEnhanced(msg) {
   if (document.querySelector(`[data-message-id="${msg._id}"]`)) return;
-
   const isSent = msg.sender._id === myUserId;
   const div = document.createElement('div');
   div.className = `message ${isSent ? 'sent' : ''} ${msg.edited ? 'edited' : ''}`;
   div.dataset.messageId = msg._id;
-
   let replyHtml = '';
   if (msg.replyTo && (msg.replyTo.content || msg.replyTo.fileUrl)) {
     const replyName = msg.replyTo.sender?.username || 'مستخدم';
@@ -1079,7 +1264,6 @@ function appendMessageEnhanced(msg) {
     else if (msg.replyTo.type === 'file') replyText = '📎 ملف';
     replyHtml = `<div class="reply-quote"><strong>↩️ ${escapeHtml(replyName)}</strong><p>${escapeHtml(replyText)}</p></div>`;
   }
-
   let mediaHtml = '';
   if (msg.type === 'image' && msg.fileUrl) {
     mediaHtml = `<div class="message-media"><img src="${msg.fileUrl}" alt="صورة" loading="lazy"></div>`;
@@ -1097,7 +1281,6 @@ function appendMessageEnhanced(msg) {
         </div>
       </div>`;
   }
-
   div.innerHTML = `
     ${!isSent ? `<div class="message-sender">${escapeHtml(msg.sender.username)}</div>` : ''}
     ${replyHtml}
@@ -1108,7 +1291,6 @@ function appendMessageEnhanced(msg) {
       ${isSent ? `<span class="read-tick">${msg.status === 'read' ? '✓✓' : '✓'}</span>` : ''}
     </div>
   `;
-
   if (msg.type === 'image' && msg.fileUrl) {
     const img = div.querySelector('.message-media img');
     if (img) img.addEventListener('click', (e) => { e.stopPropagation(); openLightbox(msg.fileUrl, 'image'); });
@@ -1122,7 +1304,6 @@ function appendMessageEnhanced(msg) {
   } else if (msg.type === 'audio' && msg.fileUrl) {
     setupAudioPlayer(div, msg);
   }
-
   messagesContainer.appendChild(div);
 }
 
@@ -1153,11 +1334,9 @@ function setupAudioPlayer(messageDiv, msg) {
   const url = msg.fileUrl;
   let audio = new Audio(url);
   audio.preload = 'metadata';
-
   audio.addEventListener('loadedmetadata', () => {
     if (!isNaN(audio.duration)) timeEl.textContent = formatDuration(audio.duration);
   });
-
   playBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     if (audio.paused) {
@@ -1169,13 +1348,11 @@ function setupAudioPlayer(messageDiv, msg) {
       playBtn.textContent = '▶';
     }
   });
-
   audio.addEventListener('ended', () => {
     playBtn.textContent = '▶';
     bars.forEach(b => b.classList.remove('played'));
     timeEl.textContent = formatDuration(msg.audioDuration || audio.duration || 0);
   });
-
   audio.addEventListener('timeupdate', () => {
     if (!audio.duration) return;
     const progress = audio.currentTime / audio.duration;
@@ -1186,7 +1363,6 @@ function setupAudioPlayer(messageDiv, msg) {
     });
     timeEl.textContent = formatDuration(audio.currentTime);
   });
-
   waveform.addEventListener('click', (e) => {
     e.stopPropagation();
     if (!audio.duration) return;
@@ -1195,7 +1371,6 @@ function setupAudioPlayer(messageDiv, msg) {
     const percent = Math.max(0, Math.min(1, x / rect.width));
     audio.currentTime = percent * audio.duration;
   });
-
   audioEl._audio = audio;
 }
 
@@ -1390,13 +1565,6 @@ function showMiniToast(text) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-$('logoutBtn').addEventListener('click', () => {
-  if (confirm('هل تريد تسجيل الخروج؟')) {
-    localStorage.clear();
-    socket.disconnect();
-    window.location.href = '/login.html';
-  }
-});
 $('newChatBtn').addEventListener('click', () => { searchInput.focus(); showToast('🔍 ابحث عن مستخدم', 'info'); });
 if (backBtn) backBtn.addEventListener('click', () => { history.back(); });
 document.addEventListener('click', (e) => {
