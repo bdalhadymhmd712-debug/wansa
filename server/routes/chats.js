@@ -18,7 +18,11 @@ router.get('/users', auth, async (req, res) => {
     const query = { _id: { $ne: req.userId } };
 
     if (search) {
-      query.username = { $regex: search, $options: 'i' };
+      query.$or = [
+        { username: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { phone: { $regex: search, $options: 'i' } }
+      ];
     }
 
     const users = await User.find(query)
@@ -31,7 +35,6 @@ router.get('/users', auth, async (req, res) => {
     res.status(500).json({ error: 'حدث خطأ في السيرفر' });
   }
 });
-
 // ==========================================
 // POST /api/chats - إنشاء أو جلب محادثة فردية
 // ==========================================

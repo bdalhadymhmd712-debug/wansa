@@ -9,145 +9,105 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 
-// ==========================================
-// دالة مساعدة: إنشاء JWT
-// ==========================================
 const generateToken = (userId) => {
-  return jwt.sign(
-    { id: userId },
-    process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRE || '7d' }
-  );
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '7d' });
 };
 
 // ==========================================
-// POST /api/auth/register - تسجيل مستخدم جديد
+// POST /api/auth/register
 // ==========================================
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, phone, password } = req.body;
 
-    // التحقق من المدخلات
-    if (!username || !email || !password) {
-      return res.status(400).json({
-        error: 'جميع الحقول مطلوبة (username, email, password)'
-      });
+    if (!username || !password || (!email && !phone)) {
+      return res.status(400).json({ error: 'الاسم، كلمة المرور، والبريد أو الهاتف مطلوبان' });
     }
 
     if (password.length < 6) {
-      return res.status(400).json({
-        error: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'
-      });
+      return res.status(400).json({ error: 'كلمة المرور يجب أن تكون 6 أحرف على الأقل' });
     }
 
     // التحقق من وجود المستخدم
-    const existingUser = await User.findOne({
-      $or: [{ email: email.toLowerCase() }, { username }]
-    });
+    const query = [{ username }];
+    if (email) query.push({ email: email.toLowerCase() });
+    if (phone) query.push({ phone });
 
+    const existingUser = await User.findOne({ $or: query });
     if (existingUser) {
-      const field = existingUser.email === email.toLowerCase() ? 'البريد' : 'اسم المستخدم';
-      return res.status(400).json({
-        error: `${field} مستخدم بالفعل`
-      });
+      if (existingUser.username === username) return res.status(400).json({ error: 'اسم المستخدم مستخدم بالفعل' });
+      if (email && existingUser.email === email.toLowerCase()) return res.status(400).json({ error: 'البريد الإلكتروني مستخدم بالفعل' });
+      if (phone && existingUser.phone === phone) return res.status(400).json({ error: 'رقم الهاتف مستخدم بالفعل' });
     }
 
-    // تشفير كلمة المرور
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // إنشاء المستخدم
     const user = await User.create({
       username,
-      email: email.toLowerCase(),
+      email: email ? email.toLowerCase() : undefined,
+      phone,
       password: hashedPassword
     });
 
-    // إنشاء التوكن
     const token = generateToken(user._id);
+    res.status(201).json({ message: '✅ تم التسجيل بنجاح', token, user });
 
-    res.status(201).json({
-      message: '✅ تم التسجيل بنجاح',
-      token,
-      user
-    });
   } catch (err) {
     console.error('خطأ في التسجيل:', err.message);
-    res.status(500).json({
-      error: 'حدث خطأ في السيرفر أثناء التسجيل'
-    });
+    res.status(500).json({ error: err.message || 'حدث خطأ في السيرفر' });
   }
 });
 
 // ==========================================
-// POST /api/auth/login - تسجيل الدخول
+// POST /api/auth/login (يدعم البريد أو الهاتف)
 // ==========================================
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { login, password } = req.body; // login: البريد أو الهاتف
 
-    if (!email || !password) {
-      return res.status(400).json({
-        error: 'البريد وكلمة المرور مطلوبان'
-      });
+    if (!login || !password) {
+      return res.status(400).json({ error: 'البريد/الهاتف وكلمة المرور مطلوبان' });
     }
 
-    // البحث عن المستخدم
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // البحث بالبريد أو الهاتف
+    const user = await User.findOne({
+      $or: [
+        { email: login.toLowerCase() },
+        { phone: login }
+      ]
+    });
 
     if (!user) {
-      return res.status(401).json({
-        error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
-      });
+      return res.status(401).json({ error: 'البيانات غير صحيحة' });
     }
 
-    // مقارنة كلمة المرور
     const isMatch = await bcrypt.compare(password, user.password);
-
     if (!isMatch) {
-      return res.status(401).json({
-        error: 'البريد الإلكتروني أو كلمة المرور غير صحيحة'
-      });
+      return res.status(401).json({ error: 'البيانات غير صحيحة' });
     }
 
-    // تحديث حالة الاتصال
     user.isOnline = true;
     user.lastSeen = new Date();
     await user.save();
 
-    // إنشاء التوكن
     const token = generateToken(user._id);
+    res.json({ message: '✅ تم تسجيل الدخول', token, user });
 
-    res.json({
-      message: '✅ تم تسجيل الدخول بنجاح',
-      token,
-      user
-    });
   } catch (err) {
     console.error('خطأ في الدخول:', err.message);
-    res.status(500).json({
-      error: 'حدث خطأ في السيرفر أثناء الدخول'
-    });
+    res.status(500).json({ error: 'حدث خطأ في السيرفر' });
   }
 });
 
 // ==========================================
-// GET /api/auth/me - بيانات المستخدم الحالي
+// GET /api/auth/me
 // ==========================================
 router.get('/me', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
-
-    if (!user) {
-      return res.status(404).json({
-        error: 'المستخدم غير موجود'
-      });
-    }
-
+    if (!user) return res.status(404).json({ error: 'المستخدم غير موجود' });
     res.json({ user });
   } catch (err) {
-    res.status(500).json({
-      error: 'حدث خطأ في السيرفر'
-    });
+    res.status(500).json({ error: 'حدث خطأ في السيرفر' });
   }
 });
 

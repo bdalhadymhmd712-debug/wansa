@@ -14,7 +14,6 @@ const userSchema = new mongoose.Schema({
     maxlength: [30, 'اسم المستخدم طويل جداً'],
     validate: {
       validator: function(v) {
-        // يسمح بالعربية، الإنجليزية، الأرقام، الشرطة السفلية، والمسافة
         return /^[\u0600-\u06FFa-zA-Z0-9_\s]+$/.test(v);
       },
       message: 'اسم المستخدم يحتوي على رموز غير مسموحة'
@@ -22,10 +21,16 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: [true, 'البريد الإلكتروني مطلوب'],
-    unique: true,
     trim: true,
-    lowercase: true
+    lowercase: true,
+    sparse: true, // يسمح بأن يكون فارغاً إذا استخدم الهاتف
+    unique: true
+  },
+  phone: {
+    type: String,
+    trim: true,
+    sparse: true, // يسمح بأن يكون فارغاً إذا استخدم البريد
+    unique: true
   },
   password: {
     type: String,
@@ -37,6 +42,15 @@ const userSchema = new mongoose.Schema({
   isOnline: { type: Boolean, default: false },
   lastSeen: { type: Date, default: Date.now }
 }, { timestamps: true });
+
+// التحقق: يجب أن يكون هناك بريد أو هاتف
+userSchema.pre('validate', function(next) {
+  if (!this.email && !this.phone) {
+    next(new Error('يجب إدخال البريد الإلكتروني أو رقم الهاتف'));
+  } else {
+    next();
+  }
+});
 
 // إخفاء كلمة المرور عند الإرجاع
 userSchema.methods.toJSON = function() {
