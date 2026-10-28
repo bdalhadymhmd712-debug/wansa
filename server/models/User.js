@@ -11,7 +11,14 @@ const userSchema = new mongoose.Schema({
     unique: true,
     trim: true,
     minlength: [3, 'اسم المستخدم يجب أن يكون 3 أحرف على الأقل'],
-    maxlength: [30, 'اسم المستخدم طويل جداً']
+    maxlength: [30, 'اسم المستخدم طويل جداً'],
+    validate: {
+      validator: function(v) {
+        // يسمح بالعربية، الإنجليزية، الأرقام، الشرطة السفلية، والمسافة
+        return /^[\u0600-\u06FFa-zA-Z0-9_\s]+$/.test(v);
+      },
+      message: 'اسم المستخدم يحتوي على رموز غير مسموحة'
+    }
   },
   email: {
     type: String,
@@ -25,27 +32,13 @@ const userSchema = new mongoose.Schema({
     required: [true, 'كلمة المرور مطلوبة'],
     minlength: [6, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل']
   },
-  avatar: {
-    type: String,
-    default: ''
-  },
-  bio: {
-    type: String,
-    default: 'مرحباً! أنا أستخدم Wansa'
-  },
-  isOnline: {
-    type: Boolean,
-    default: false
-  },
-  lastSeen: {
-    type: Date,
-    default: Date.now
-  }
-}, {
-  timestamps: true // يضيف createdAt و updatedAt تلقائياً
-});
+  avatar: { type: String, default: '' },
+  bio: { type: String, default: 'مرحباً! أنا أستخدم Wansa' },
+  isOnline: { type: Boolean, default: false },
+  lastSeen: { type: Date, default: Date.now }
+}, { timestamps: true });
 
-// إخفاء كلمة المرور عند إرجاع بيانات المستخدم
+// إخفاء كلمة المرور عند الإرجاع
 userSchema.methods.toJSON = function() {
   const user = this.toObject();
   delete user.password;
