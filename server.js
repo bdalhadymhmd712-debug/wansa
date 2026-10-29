@@ -96,10 +96,14 @@ mongoose.connect(process.env.MONGO_URI)
 const authRoutes = require('./server/routes/auth');
 const chatRoutes = require('./server/routes/chats');
 const messageRoutes = require('./server/routes/messages');
+const userRoutes = require('./server/routes/users'); // ✅ جديد
+const statusRoutes = require('./server/routes/status'); // ✅ جديد
 
 app.use('/api/auth', authRoutes);
 app.use('/api/chats', chatRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/users', userRoutes); // ✅ جديد
+app.use('/api/status', statusRoutes); // ✅ جديد
 
 // ==========================================
 // مسار رفع الملفات
