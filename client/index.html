@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Wansa - المحادثات</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <script src="/socket.io/socket.io.js"></script>
@@ -11,27 +11,31 @@
       --bg-app: #f0f2f5; --bg-sidebar: #ffffff; --bg-chat: #efeae2; --bg-header: #075E54;
       --bg-input: #f0f2f5; --bg-input-field: #ffffff; --bg-hover: #f5f6f6; --bg-active: #e9edef;
       --bg-message: #ffffff; --bg-message-sent: #DCF8C6; --bg-modal: #ffffff; --bg-context: #ffffff;
+      --bg-quote: rgba(0,0,0,0.05); --bg-quote-sent: rgba(0,0,0,0.08);
       --text-primary: #111b21; --text-secondary: #667781; --text-header: #ffffff;
-      --border: #e5e7eb; --accent: #25D366; --accent-dark: #128C7E; --danger: #dc2626;
+      --border: #e5e7eb; --border-light: #f0f2f5; --shadow: rgba(0,0,0,0.1); --shadow-strong: rgba(0,0,0,0.25);
+      --accent: #25D366; --accent-dark: #128C7E; --danger: #dc2626;
     }
     [data-theme="dark"] {
       --bg-app: #0b141a; --bg-sidebar: #111b21; --bg-chat: #0b141a; --bg-header: #1f2c33;
       --bg-input: #1f2c33; --bg-input-field: #2a3942; --bg-hover: #202c33; --bg-active: #2a3942;
       --bg-message: #202c33; --bg-message-sent: #005c4b; --bg-modal: #233138; --bg-context: #233138;
+      --bg-quote: rgba(255,255,255,0.07); --bg-quote-sent: rgba(255,255,255,0.1);
       --text-primary: #e9edef; --text-secondary: #8696a0; --text-header: #e9edef;
-      --border: #2a3942; --accent: #00a884; --accent-dark: #005c4b; --danger: #f15c6d;
+      --border: #2a3942; --border-light: #202c33; --shadow: rgba(0,0,0,0.4); --shadow-strong: rgba(0,0,0,0.7);
+      --accent: #00a884; --accent-dark: #005c4b; --danger: #f15c6d;
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
-    body { height: 100vh; overflow: hidden; background: var(--bg-app); transition: background 0.3s; }
-    .app { display: flex; height: 100vh; background: var(--bg-app); }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-app); transition: background 0.3s; }
+    .app { display: flex; height: 100vh; height: 100dvh; background: var(--bg-app); width: 100%; }
 
-    /* Sidebar */
-    .sidebar { width: 380px; background: var(--bg-sidebar); border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+    /* ===== Sidebar ===== */
+    .sidebar { width: 380px; background: var(--bg-sidebar); border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease; }
     .sidebar-header { background: var(--bg-header); color: var(--text-header); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
     .user-info { display: flex; align-items: center; gap: 12px; }
     .user-avatar { width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; flex-shrink: 0; }
-    .user-details h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+    .user-details h3 { font-size: 15px; font-weight: 600; }
     .header-actions { display: flex; gap: 6px; position: relative; }
     .icon-btn { width: 38px; height: 38px; background: rgba(255,255,255,0.15); border: none; border-radius: 50%; color: var(--text-header); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .icon-btn:hover { background: rgba(255,255,255,0.3); }
@@ -43,9 +47,9 @@
     .dropdown-item:hover { background: var(--bg-hover); }
 
     /* Drawer */
-    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; }
+    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; backdrop-filter: blur(2px); }
     .drawer-overlay.show { display: block; }
-    .drawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100%; background: var(--bg-sidebar); z-index: 1001; display: flex; flex-direction: column; transition: right 0.3s; }
+    .drawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100%; height: 100dvh; background: var(--bg-sidebar); z-index: 1001; display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
     .drawer.open { right: 0; }
     .drawer-header { background: var(--bg-header); color: var(--text-header); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
     .drawer-body { flex: 1; overflow-y: auto; }
@@ -57,79 +61,76 @@
     /* Search & Chats */
     .search-box { padding: 10px 15px; background: var(--bg-input); border-bottom: 1px solid var(--border); }
     .search-box input { width: 100%; padding: 10px 15px; border: none; border-radius: 8px; background: var(--bg-input-field); color: var(--text-primary); font-size: 14px; }
-    .chats-list { flex: 1; overflow-y: auto; background: var(--bg-sidebar); }
+    .search-results { display: none; max-height: 250px; overflow-y: auto; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); position: absolute; width: 100%; z-index: 50; top: 100px; }
+    .search-results.show { display: block; }
+    .search-result-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border-light); }
+    .search-result-item:hover { background: var(--bg-hover); }
+    
+    .chats-list { flex: 1; overflow-y: auto; background: var(--bg-sidebar); position: relative; }
     .chat-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border); }
     .chat-item:hover { background: var(--bg-hover); }
     .chat-item.active { background: var(--bg-active); }
-    .chat-item-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; }
+    .chat-item-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; flex-shrink: 0; }
+    .chat-item-content { flex: 1; min-width: 0; }
     .chat-item-name { font-weight: 600; color: var(--text-primary); font-size: 15px; }
     .chat-item-preview { font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    
-    /* Chat Area */
-    .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); position: relative; }
-    .chat-header { background: var(--bg-header); color: var(--text-header); padding: 12px 20px; display: flex; align-items: center; }
-    .messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
-    .message { max-width: 65%; padding: 8px 12px; border-radius: 8px; background: var(--bg-message); align-self: flex-start; cursor: pointer; }
-    .message.sent { background: var(--bg-message-sent); align-self: flex-end; }
-    .message-content { font-size: 14.5px; color: var(--text-primary); }
-    .message-input-area { background: var(--bg-input); padding: 12px 20px; display: flex; gap: 8px; }
-    .message-input-area input { flex: 1; padding: 12px 18px; border: none; border-radius: 24px; background: var(--bg-input-field); color: var(--text-primary); }
-    .send-btn { width: 46px; height: 46px; background: var(--accent); color: #fff; border: none; border-radius: 50%; font-size: 20px; cursor: pointer; }
-    .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); }
 
-    /* Modals General */
+    /* Chat Area */
+    .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); position: relative; width: 100%; }
+    .chat-header { background: var(--bg-header); color: var(--text-header); padding: 10px 20px; display: flex; align-items: center; gap: 15px; z-index: 10; }
+    .messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1; }
+    .message { max-width: 75%; padding: 6px; border-radius: 8px; background: var(--bg-message); box-shadow: 0 1px 2px var(--shadow); position: relative; word-wrap: break-word; animation: messageIn 0.3s ease; align-self: flex-start; cursor: pointer; }
+    @keyframes messageIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .message.sent { background: var(--bg-message-sent); align-self: flex-end; }
+    .message-sender { font-size: 11px; font-weight: 600; color: var(--accent); margin-bottom: 4px; padding: 0 6px; }
+    .message.sent .message-sender { display: none; }
+    .message-content { font-size: 14.5px; color: var(--text-primary); padding: 4px 6px; }
+    .message-meta { font-size: 10px; color: var(--text-secondary); text-align: left; margin-top: 4px; display: flex; justify-content: flex-end; padding: 0 6px; }
+
+    .message-media { max-width: 320px; border-radius: 6px; overflow: hidden; cursor: pointer; background: #000; display: block; margin: 2px 0; }
+    .message-media img, .message-media video { width: 100%; max-height: 400px; display: block; object-fit: cover; }
+    .file-attachment { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-quote); border-radius: 6px; margin: 4px 6px; cursor: pointer; }
+
+    .message-input-area { background: var(--bg-input); padding: 10px 15px; display: flex; gap: 8px; align-items: center; z-index: 10; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+    .message-input-area input { flex: 1; padding: 12px 18px; border: none; border-radius: 24px; background: var(--bg-input-field); color: var(--text-primary); font-size: 15px; outline: none; }
+    .camera-btn, .mic-btn { width: 42px; height: 42px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); flex-shrink: 0; }
+    .camera-btn svg, .mic-btn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .send-btn { width: 42px; height: 42px; background: var(--accent); color: #fff; border: none; border-radius: 50%; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); padding: 40px; text-align: center; }
+
+    /* Modals & Utilities */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.show { display: flex; }
     .modal-content { background: var(--bg-modal); border-radius: 12px; padding: 25px; width: 100%; max-width: 400px; color: var(--text-primary); }
-    .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; color: var(--text-primary); }
-    .modal-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-input-field); color: var(--text-primary); margin-bottom: 15px; }
+    .modal-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-input-field); color: var(--text-primary); margin-bottom: 15px; font-family: inherit; }
     .modal-btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
     .modal-btn.cancel { background: var(--bg-input); color: var(--text-secondary); margin-left: 10px; }
     .modal-btn.primary { background: var(--accent); color: #fff; }
     .modal-btn.danger { background: var(--danger); color: #fff; }
     .modal-actions { display: flex; justify-content: flex-end; margin-top: 15px; }
 
-    /* Profile Modal */
-    .profile-avatar-container { text-align: center; margin-bottom: 15px; position: relative; }
-    .profile-avatar-large { width: 100px; height: 100px; border-radius: 50%; background: var(--bg-hover); display: inline-flex; align-items: center; justify-content: center; font-size: 40px; color: var(--text-primary); overflow: hidden; }
-    .profile-avatar-large img { width: 100%; height: 100%; object-fit: cover; }
-    .avatar-edit-btn { position: absolute; bottom: 0; right: 50%; transform: translateX(60px); background: var(--accent); color: #fff; width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; font-size: 14px; }
-
-    /* Status Modal */
-    .status-options { display: flex; gap: 15px; justify-content: center; margin-bottom: 20px; }
-    .status-opt { flex: 1; padding: 20px; background: var(--bg-hover); border-radius: 10px; text-align: center; cursor: pointer; font-size: 16px; font-weight: 600; }
-    .status-opt:hover { background: var(--border); }
-    .status-textarea { width: 100%; height: 100px; padding: 12px; border-radius: 8px; background: var(--bg-input-field); color: var(--text-primary); border: 1px solid var(--border); font-family: inherit; resize: none; }
-    
-    /* Privacy Modal */
-    .privacy-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
-    .privacy-item:hover { background: var(--bg-hover); padding: 15px 10px; }
-    .privacy-title { font-size: 15px; font-weight: 600; }
-    .privacy-desc { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--accent); }
-    input:checked + .slider:before { transform: translateX(20px); }
-
-    /* Utility */
     .hidden { display: none !important; }
-    .toast { position: fixed; top: 20px; right: 50%; transform: translateX(50%); background: var(--bg-header); color: var(--text-header); padding: 12px 24px; border-radius: 8px; z-index: 9999; opacity: 0; transition: 0.3s; }
+    .toast { position: fixed; top: 20px; right: 50%; transform: translateX(50%); background: var(--bg-header); color: var(--text-header); padding: 12px 24px; border-radius: 8px; z-index: 9999; opacity: 0; transition: 0.3s; pointer-events: none; }
     .toast.show { opacity: 1; }
     .toast.error { background: var(--danger); }
 
+    /* ===== Responsive Design ===== */
     @media (max-width: 768px) {
       .sidebar { width: 100%; position: absolute; z-index: 20; height: 100%; }
-      .sidebar.hidden { display: none; }
+      .sidebar.hidden { transform: translateX(100%); }
       .chat-area { width: 100%; }
       .message { max-width: 85%; }
+      .search-results { position: fixed; top: 130px; right: 0; width: 100%; }
+      .back-btn-mobile { display: flex !important; }
+    }
+    @media (min-width: 769px) {
+      .back-btn-mobile { display: none !important; }
     }
   </style>
 </head>
 <body>
   <div class="app">
-    <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="user-info">
@@ -144,13 +145,13 @@
           </div>
         </div>
       </div>
-      <div class="search-box">
+      <div class="search-box" style="position:relative;">
         <input type="text" id="searchInput" placeholder="ابحث برقم الهاتف أو البريد...">
+        <div class="search-results" id="searchResults"></div>
       </div>
       <div class="chats-list" id="chatsList"></div>
     </aside>
 
-    <!-- Chat Area -->
     <main class="chat-area" id="chatArea">
       <div class="welcome-screen" id="welcomeScreen">
         <h2>💬 Wansa Web</h2>
@@ -158,12 +159,22 @@
       </div>
       <div id="activeChat" class="hidden" style="display: flex; flex-direction: column; height: 100%;">
         <div class="chat-header">
-          <button class="icon-btn" id="backBtn" style="background: transparent; margin-left: 10px;">←</button>
-          <div class="chat-item-avatar" id="chatAvatar" style="width: 36px; height: 36px; font-size: 14px; margin-left: 10px;">م</div>
+          <button class="icon-btn back-btn-mobile" id="backBtn" style="background: transparent;">←</button>
+          <div class="chat-item-avatar" id="chatAvatar" style="width: 36px; height: 36px; font-size: 14px;">م</div>
           <div><h3 id="chatName">...</h3></div>
         </div>
         <div class="messages-container" id="messagesContainer"></div>
+        
         <div class="message-input-area">
+          <button class="camera-btn" id="cameraBtn">
+            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </button>
+          <input type="file" id="mediaInput" accept="image/*,video/*" style="display: none;">
+          
+          <button class="mic-btn" id="micBtn">
+            <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+
           <input type="text" id="messageInput" placeholder="اكتب رسالة...">
           <button class="send-btn" id="sendBtn">➤</button>
         </div>
@@ -185,21 +196,16 @@
     </div>
   </div>
 
-  <!-- Modal: Profile -->
+  <!-- Modals (Profile, Status, Group, Privacy, Delete) -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-content">
-      <div class="modal-title">الملف الشخصي</div>
-      <div class="profile-avatar-container">
-        <div class="profile-avatar-large" id="profileAvatarLarge">👤</div>
-        <input type="file" id="avatarInput" accept="image/*" style="display: none;">
-        <button class="avatar-edit-btn" id="changeAvatarBtn">📷</button>
+      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">الملف الشخصي</div>
+      <div style="text-align:center; margin-bottom:15px;">
+        <div id="profileAvatarLarge" style="width: 80px; height: 80px; background: var(--accent); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 30px; color: white;">👤</div>
       </div>
-      <label style="font-size: 12px; color: var(--text-secondary);">اسم المستخدم</label>
       <input type="text" class="modal-input" id="profileUsername" disabled>
-      <label style="font-size: 12px; color: var(--text-secondary);">البريد / الهاتف</label>
       <input type="text" class="modal-input" id="profileContact" disabled>
-      <label style="font-size: 12px; color: var(--text-secondary);">السيرة الذاتية</label>
-      <textarea class="modal-input" id="profileBio" rows="2"></textarea>
+      <textarea class="modal-input" id="profileBio" rows="2" placeholder="السيرة الذاتية"></textarea>
       <div class="modal-actions">
         <button class="modal-btn cancel" onclick="closeModal('profileModal')">إغلاق</button>
         <button class="modal-btn primary" id="saveProfileBtn">حفظ</button>
@@ -207,23 +213,21 @@
     </div>
   </div>
 
-  <!-- Modal: Status Options -->
   <div class="modal-overlay" id="statusOptionsModal">
     <div class="modal-content">
-      <div class="modal-title">إنشاء حالة</div>
-      <div class="status-options">
-        <div class="status-opt" id="statusTextOpt">📝 نص</div>
-        <div class="status-opt" id="statusMediaOpt">📷 صورة/فيديو</div>
+      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">إنشاء حالة</div>
+      <div style="display:flex; gap:10px;">
+        <div class="modal-btn primary" style="flex:1; text-align:center;" id="statusTextOpt">📝 نص</div>
+        <div class="modal-btn primary" style="flex:1; text-align:center;" id="statusMediaOpt">📷 صورة</div>
       </div>
       <div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal('statusOptionsModal')">إلغاء</button></div>
     </div>
   </div>
 
-  <!-- Modal: Status Text -->
   <div class="modal-overlay" id="statusTextModal">
     <div class="modal-content">
-      <div class="modal-title">حالة نصية</div>
-      <textarea class="status-textarea" id="statusTextInput" placeholder="اكتب حالتك هنا..."></textarea>
+      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">حالة نصية</div>
+      <textarea class="modal-input" id="statusTextInput" rows="3" placeholder="اكتب حالتك هنا..."></textarea>
       <div class="modal-actions">
         <button class="modal-btn cancel" onclick="closeModal('statusTextModal')">إلغاء</button>
         <button class="modal-btn primary" id="publishTextStatusBtn">نشر</button>
@@ -231,14 +235,11 @@
     </div>
   </div>
 
-  <!-- Modal: Group -->
   <div class="modal-overlay" id="groupModal">
     <div class="modal-content">
-      <div class="modal-title">إنشاء مجموعة</div>
+      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">إنشاء مجموعة</div>
       <input type="text" class="modal-input" id="groupNameInput" placeholder="اسم المجموعة">
-      <div id="groupMembersList" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px; border: 1px solid var(--border); padding: 10px; border-radius: 8px;">
-        <!-- سيتم تعبئتها بـ JS -->
-      </div>
+      <div id="groupMembersList" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px; border: 1px solid var(--border); padding: 10px; border-radius: 8px;"></div>
       <div class="modal-actions">
         <button class="modal-btn cancel" onclick="closeModal('groupModal')">إلغاء</button>
         <button class="modal-btn primary" id="createGroupBtn">إنشاء</button>
@@ -246,56 +247,35 @@
     </div>
   </div>
 
-  <!-- Modal: Privacy -->
   <div class="modal-overlay" id="privacyModal">
     <div class="modal-content">
-      <div class="modal-title">الخصوصية</div>
-      
-      <div class="privacy-item">
-        <div>
-          <div class="privacy-title">إخفاء حالة النشاط</div>
-          <div class="privacy-desc">لن يرى أحد متى كنت متصلاً</div>
-        </div>
-        <label class="switch">
-          <input type="checkbox" id="hideActivityToggle">
-          <span class="slider"></span>
-        </label>
+      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">الخصوصية</div>
+      <div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid var(--border);">
+        <div>إخفاء حالة النشاط</div>
+        <input type="checkbox" id="hideActivityToggle">
       </div>
-
-      <div class="privacy-item" onclick="document.getElementById('viewersModal').classList.add('show')">
-        <div>
-          <div class="privacy-title">من يشاهد حالتي</div>
-          <div class="privacy-desc" id="viewersDesc">الجميع</div>
-        </div>
-        <div style="color: var(--text-secondary);">›</div>
+      <div style="display:flex; justify-content:space-between; padding:15px 0; cursor:pointer;" onclick="document.getElementById('viewersModal').classList.add('show')">
+        <div>من يشاهد حالتي</div>
+        <div id="viewersDesc" style="color:var(--text-secondary);">الجميع</div>
       </div>
-
       <div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal('privacyModal')">إغلاق</button></div>
     </div>
   </div>
 
-  <!-- Modal: Viewers Selection -->
-  <div class="modal-overlay" id="viewersModal" style="z-index: 2100;">
+  <div class="modal-overlay" id="viewersModal" style="z-index:2100;">
     <div class="modal-content">
-      <div class="modal-title">من يشاهد حالتي</div>
-      <div class="privacy-item" onclick="setViewers('everyone')">
-        <div class="privacy-title">الجميع</div>
-      </div>
-      <div class="privacy-item" onclick="setViewers('contacts')">
-        <div class="privacy-title">جهات الاتصال</div>
-      </div>
-      <div class="privacy-item" onclick="setViewers('selected')">
-        <div class="privacy-title">أشخاص محددون</div>
-      </div>
+      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">من يشاهد حالتي</div>
+      <div style="padding:15px 0; cursor:pointer; border-bottom:1px solid var(--border);" onclick="setViewers('everyone')">الجميع</div>
+      <div style="padding:15px 0; cursor:pointer; border-bottom:1px solid var(--border);" onclick="setViewers('contacts')">جهات الاتصال</div>
+      <div style="padding:15px 0; cursor:pointer;" onclick="setViewers('selected')">أشخاص محددون</div>
       <div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal('viewersModal')">إلغاء</button></div>
     </div>
   </div>
 
-  <!-- Modal: Delete Account -->
   <div class="modal-overlay" id="deleteAccountModal">
     <div class="modal-content">
-      <div class="modal-title" style="color: var(--danger);">⚠️ حذف الحساب</div>
-      <p style="margin-bottom: 15px; font-size: 14px;">هل أنت متأكد من أنك تريد حذف حسابك؟ هذا الإجراء لا يمكن التراجع عنه.</p>
+      <div style="color:var(--danger); font-size:18px; font-weight:600; margin-bottom:15px;">⚠️ حذف الحساب</div>
+      <p style="margin-bottom: 15px; font-size: 14px;">هل أنت متأكد؟ هذا الإجراء لا يمكن التراجع عنه.</p>
       <input type="password" class="modal-input" id="deletePasswordInput" placeholder="اكتب كلمة المرور للتأكيد">
       <div class="modal-actions">
         <button class="modal-btn cancel" onclick="closeModal('deleteAccountModal')">إلغاء</button>
@@ -320,8 +300,33 @@
   const socket = io({ auth: { token } });
   let currentChat = null;
   let chats = [];
-
   const $ = (id) => document.getElementById(id);
+
+  // ==========================================
+  // زر الرجوع للهاتف (History API)
+  // ==========================================
+  window.addEventListener('popstate', () => {
+    // 1. إغلاق النوافذ المنبثقة
+    const openModal = document.querySelector('.modal-overlay.show');
+    if (openModal) {
+      openModal.classList.remove('show');
+      return;
+    }
+    // 2. إغلاق القائمة الجانبية
+    if ($('settingsDrawer').classList.contains('open')) {
+      $('settingsDrawer').classList.remove('open');
+      $('drawerOverlay').classList.remove('show');
+      return;
+    }
+    // 3. العودة من الدردشة إلى القائمة
+    if (currentChat) {
+      currentChat = null;
+      $('activeChat').classList.add('hidden');
+      $('welcomeScreen').style.display = 'flex';
+      $('sidebar').classList.remove('hidden');
+      return;
+    }
+  });
 
   // ==========================================
   // الثيم
@@ -366,7 +371,7 @@
   };
 
   // ==========================================
-  // 1. الملف الشخصي
+  // الميزات (الملف الشخصي، الحالة، المجموعة، الخصوصية، الحذف)
   // ==========================================
   let currentUser = null;
 
@@ -376,220 +381,83 @@
       const res = await fetch(`${API_URL}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
       currentUser = data.user;
-
       $('profileUsername').value = currentUser.username;
       $('profileContact').value = currentUser.phone || currentUser.email || '';
       $('profileBio').value = currentUser.bio || '';
-      
-      if (currentUser.avatar) {
-        $('profileAvatarLarge').innerHTML = `<img src="${currentUser.avatar}">`;
-      } else {
-        $('profileAvatarLarge').textContent = currentUser.username.charAt(0).toUpperCase();
-      }
       $('profileModal').classList.add('show');
-    } catch (err) { showToast('فشل تحميل الملف', 'error'); }
+    } catch (err) { showToast('فشل التحميل', 'error'); }
   });
 
-  // رفع الصورة
-  $('changeAvatarBtn').addEventListener('click', () => $('avatarInput').click());
-  $('avatarInput').addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('file', file);
-    try {
-      showToast('جاري رفع الصورة...');
-      const uploadRes = await fetch(`${API_URL}/api/upload`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: formData
-      });
-      const uploadData = await uploadRes.json();
-      $('profileAvatarLarge').innerHTML = `<img src="${uploadData.fileUrl}">`;
-      currentUser.newAvatar = uploadData.fileUrl;
-    } catch (err) { showToast('فشل رفع الصورة', 'error'); }
-  });
-
-  // حفظ الملف
   $('saveProfileBtn').addEventListener('click', async () => {
     try {
-      const body = { bio: $('profileBio').value };
-      if (currentUser.newAvatar) body.avatar = currentUser.newAvatar;
       await fetch(`${API_URL}/api/users/profile`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(body)
+        method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ bio: $('profileBio').value })
       });
-      showToast('✅ تم الحفظ');
-      closeModal('profileModal');
+      showToast('✅ تم الحفظ'); closeModal('profileModal');
     } catch (err) { showToast('فشل الحفظ', 'error'); }
   });
 
-  // ==========================================
-  // 2. الحالة
-  // ==========================================
   $('statusBtn').addEventListener('click', () => { closeDrawer(); $('statusOptionsModal').classList.add('show'); });
-  
-  $('statusTextOpt').addEventListener('click', () => {
-    closeModal('statusOptionsModal');
-    $('statusTextModal').classList.add('show');
-  });
-
-  $('statusMediaOpt').addEventListener('click', () => {
-    closeModal('statusOptionsModal');
-    showToast('سيتم إضافة رفع صورة الحالة قريباً');
-  });
-
+  $('statusTextOpt').addEventListener('click', () => { closeModal('statusOptionsModal'); $('statusTextModal').classList.add('show'); });
   $('publishTextStatusBtn').addEventListener('click', async () => {
     const content = $('statusTextInput').value.trim();
-    if (!content) return showToast('اكتب شيئاً أولاً', 'error');
-    try {
-      await fetch(`${API_URL}/api/status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ type: 'text', content })
-      });
-      showToast('✅ تم نشر الحالة');
-      $('statusTextInput').value = '';
-      closeModal('statusTextModal');
-    } catch (err) { showToast('فشل النشر', 'error'); }
+    if (!content) return showToast('اكتب شيئاً', 'error');
+    await fetch(`${API_URL}/api/status`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ type: 'text', content }) });
+    showToast('✅ تم النشر'); $('statusTextInput').value = ''; closeModal('statusTextModal');
   });
 
-  // ==========================================
-  // 3. المجموعة
-  // ==========================================
   $('groupBtn').addEventListener('click', async () => {
     closeDrawer();
-    try {
-      // جلب كل المستخدمين (بدون بحث)
-      const res = await fetch(`${API_URL}/api/chats/users?search=@`, { headers: { Authorization: `Bearer ${token}` } }); 
-      // ملاحظة: بحثنا بعلامة @ لجلب الإيميلات، للتبسيط
-      const users = await res.json();
-      
-      const list = $('groupMembersList');
-      list.innerHTML = users.map(u => `
-        <label style="display: flex; gap: 10px; align-items: center; padding: 5px 0;">
-          <input type="checkbox" value="${u._id}" class="group-member-cb">
-          ${u.username}
-        </label>
-      `).join('') || '<div style="color:var(--text-secondary);">لا يوجد مستخدمون آخرون</div>';
-      
-      $('groupModal').classList.add('show');
-    } catch (err) { showToast('فشل تحميل المستخدمين', 'error'); }
+    const res = await fetch(`${API_URL}/api/chats/users?search=@`, { headers: { Authorization: `Bearer ${token}` } });
+    const users = await res.json();
+    $('groupMembersList').innerHTML = users.map(u => `<label style="display:flex; gap:10px; padding:5px;"><input type="checkbox" value="${u._id}" class="group-member-cb"> ${u.username}</label>`).join('') || 'لا يوجد مستخدمون';
+    $('groupModal').classList.add('show');
   });
-
   $('createGroupBtn').addEventListener('click', async () => {
     const name = $('groupNameInput').value.trim();
     const members = Array.from(document.querySelectorAll('.group-member-cb:checked')).map(cb => cb.value);
-    
-    if (!name) return showToast('اكتب اسم المجموعة', 'error');
-    if (members.length < 1) return showToast('اختر عضواً واحداً على الأقل', 'error');
-
-    try {
-      await fetch(`${API_URL}/api/chats/group`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ name, members })
-      });
-      showToast('✅ تم إنشاء المجموعة');
-      closeModal('groupModal');
-      loadChats(); // تحديث القائمة
-    } catch (err) { showToast('فشل الإنشاء', 'error'); }
+    if (!name || members.length < 1) return showToast('أكمل البيانات', 'error');
+    await fetch(`${API_URL}/api/chats/group`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ name, members }) });
+    showToast('✅ تم الإنشاء'); closeModal('groupModal'); loadChats();
   });
 
-  // ==========================================
-  // 4. الخصوصية
-  // ==========================================
   $('privacyBtn').addEventListener('click', async () => {
     closeDrawer();
-    try {
-      const res = await fetch(`${API_URL}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
-      const data = await res.json();
-      const p = data.user.privacy || {};
-      
-      $('hideActivityToggle').checked = p.hideActivity || false;
-      updateViewersText(p.statusViewers || 'everyone');
-      
-      $('privacyModal').classList.add('show');
-    } catch (err) { showToast('فشل تحميل الإعدادات', 'error'); }
+    const res = await fetch(`${API_URL}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
+    const data = await res.json();
+    $('hideActivityToggle').checked = data.user.privacy?.hideActivity || false;
+    $('privacyModal').classList.add('show');
   });
-
   $('hideActivityToggle').addEventListener('change', async (e) => {
-    await fetch(`${API_URL}/api/users/privacy`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ hideActivity: e.target.checked })
-    });
+    await fetch(`${API_URL}/api/users/privacy`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ hideActivity: e.target.checked }) });
     showToast('✅ تم التحديث');
   });
-
   window.setViewers = async (val) => {
-    await fetch(`${API_URL}/api/users/privacy`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ statusViewers: val })
-    });
-    updateViewersText(val);
-    closeModal('viewersModal');
-    showToast('✅ تم التحديث');
+    await fetch(`${API_URL}/api/users/privacy`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ statusViewers: val }) });
+    closeModal('viewersModal'); showToast('✅ تم التحديث');
   };
 
-  function updateViewersText(val) {
-    const map = { 'everyone': 'الجميع', 'contacts': 'جهات الاتصال', 'selected': 'أشخاص محددون' };
-    $('viewersDesc').textContent = map[val] || 'الجميع';
-  }
-
-  // ==========================================
-  // 5. حذف الحساب
-  // ==========================================
-  $('deleteAccountBtn').addEventListener('click', () => {
-    closeDrawer();
-    $('deletePasswordInput').value = '';
-    $('deleteAccountModal').classList.add('show');
-  });
-
+  $('deleteAccountBtn').addEventListener('click', () => { closeDrawer(); $('deleteAccountModal').classList.add('show'); });
   $('confirmDeleteBtn').addEventListener('click', async () => {
     const password = $('deletePasswordInput').value;
     if (!password) return showToast('اكتب كلمة المرور', 'error');
-    
-    try {
-      const res = await fetch(`${API_URL}/api/users/account`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ password })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
-
-      showToast('✅ تم حذف الحساب');
-      localStorage.clear();
-      setTimeout(() => window.location.href = '/register.html', 1500);
-    } catch (err) { showToast(err.message, 'error'); }
+    const res = await fetch(`${API_URL}/api/users/account`, { method: 'DELETE', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ password }) });
+    const data = await res.json();
+    if (!res.ok) return showToast(data.error, 'error');
+    localStorage.clear(); window.location.href = '/register.html';
   });
 
-  // ==========================================
-  // 6. تسجيل الخروج
-  // ==========================================
   $('logoutBtn').addEventListener('click', () => {
-    if (confirm('هل تريد تسجيل الخروج؟')) {
-      localStorage.clear();
-      socket.disconnect();
-      window.location.href = '/login.html';
-    }
+    if (confirm('تسجيل الخروج؟')) { localStorage.clear(); socket.disconnect(); window.location.href = '/login.html'; }
   });
 
   // ==========================================
-  // المحادثات (الدردشة الأساسية)
+  // الدردشة والرسائل (Socket)
   // ==========================================
   async function loadChats() {
-    try {
-      const res = await fetch(`${API_URL}/api/chats`, { headers: { Authorization: `Bearer ${token}` } });
-      chats = await res.json();
-      renderChats();
-    } catch (err) { console.error(err); }
-  }
-
-  function renderChats() {
+    const res = await fetch(`${API_URL}/api/chats`, { headers: { Authorization: `Bearer ${token}` } });
+    chats = await res.json();
     const list = $('chatsList');
     if (!chats.length) { list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">لا توجد محادثات</div>'; return; }
     list.innerHTML = chats.map(c => {
@@ -597,10 +465,9 @@
       const name = c.isGroup ? c.name : (other?.username || 'مجهول');
       return `<div class="chat-item" data-id="${c._id}">
         <div class="chat-item-avatar">${name.charAt(0)}</div>
-        <div><div class="chat-item-name">${name}</div><div class="chat-item-preview">${c.lastMessage?.content || '...'}</div></div>
+        <div class="chat-item-content"><div class="chat-item-name">${name}</div><div class="chat-item-preview">${c.lastMessage?.content || '...'}</div></div>
       </div>`;
     }).join('');
-    
     document.querySelectorAll('.chat-item').forEach(el => {
       el.addEventListener('click', () => openChat(chats.find(c => c._id === el.dataset.id)));
     });
@@ -609,39 +476,54 @@
   async function openChat(chat) {
     currentChat = chat;
     const other = chat.members.find(m => m._id !== myUserId);
-    const name = chat.isGroup ? chat.name : (other?.username || 'مجهول');
-    $('chatName').textContent = name;
-    $('chatAvatar').textContent = name.charAt(0);
+    $('chatName').textContent = chat.isGroup ? chat.name : (other?.username || 'مجهول');
     $('welcomeScreen').style.display = 'none';
     $('activeChat').classList.remove('hidden');
-    $('sidebar').classList.add('hidden');
-    
+    $('sidebar').classList.add('hidden'); // إخفاء القائمة في الهاتف
+    history.pushState({ view: 'chat' }, '', '#chat'); // للرجوع
+
     socket.emit('joinChat', chat._id);
-    
     const res = await fetch(`${API_URL}/api/messages/${chat._id}`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
-    $('messagesContainer').innerHTML = (data.messages || []).map(m => 
-      `<div class="message ${m.sender._id === myUserId ? 'sent' : ''}"><div class="message-content">${m.content || '(وسائط)'}</div></div>`
-    ).join('');
+    $('messagesContainer').innerHTML = (data.messages || []).map(m => {
+      let html = `<div class="message ${m.sender._id === myUserId ? 'sent' : ''}">`;
+      if (m.type === 'image') html += `<img src="${m.fileUrl}" style="max-width:100%; border-radius:5px;">`;
+      else if (m.type === 'video') html += `<video src="${m.fileUrl}" controls style="max-width:100%; border-radius:5px;"></video>`;
+      else html += `<div class="message-content">${m.content}</div>`;
+      return html + `</div>`;
+    }).join('');
     scrollToBottom();
   }
 
-  $('backBtn').addEventListener('click', () => {
-    $('activeChat').classList.add('hidden');
-    $('welcomeScreen').style.display = 'flex';
-    $('sidebar').classList.remove('hidden');
-  });
+  $('backBtn').addEventListener('click', () => { history.back(); });
 
   $('sendBtn').addEventListener('click', () => {
     const text = $('messageInput').value.trim();
     if (!text || !currentChat) return;
-    socket.emit('sendMessage', { chatId: currentChat._id, senderId: myUserId, content: text });
+    socket.emit('sendMessage', { chatId: currentChat._id, senderId: myUserId, content: text, type: 'text' });
     $('messageInput').value = '';
+  });
+
+  // رفع الصور
+  $('cameraBtn').addEventListener('click', () => $('mediaInput').click());
+  $('mediaInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentChat) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    showToast('جاري الرفع...');
+    const uploadRes = await fetch(`${API_URL}/api/upload`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: formData });
+    const uploadData = await uploadRes.json();
+    socket.emit('sendMessage', { chatId: currentChat._id, senderId: myUserId, content: '', type: file.type.startsWith('image') ? 'image' : 'video', fileUrl: uploadData.fileUrl });
   });
 
   socket.on('newMessage', (msg) => {
     if (currentChat && msg.chatId === currentChat._id) {
-      $('messagesContainer').innerHTML += `<div class="message ${msg.sender._id === myUserId ? 'sent' : ''}"><div class="message-content">${msg.content || '(وسائط)'}</div></div>`;
+      let html = `<div class="message ${msg.sender._id === myUserId ? 'sent' : ''}">`;
+      if (msg.type === 'image') html += `<img src="${msg.fileUrl}" style="max-width:100%; border-radius:5px;">`;
+      else if (msg.type === 'video') html += `<video src="${msg.fileUrl}" controls style="max-width:100%; border-radius:5px;"></video>`;
+      else html += `<div class="message-content">${msg.content}</div>`;
+      $('messagesContainer').innerHTML += html + `</div>`;
       scrollToBottom();
     }
     loadChats();
@@ -654,19 +536,24 @@
   $('searchInput').addEventListener('input', (e) => {
     clearTimeout(searchTimeout);
     const q = e.target.value.trim();
-    if (!q) return;
+    if (!q) { $('searchResults').classList.remove('show'); return; }
     searchTimeout = setTimeout(async () => {
       const res = await fetch(`${API_URL}/api/chats/users?search=${encodeURIComponent(q)}`, { headers: { Authorization: `Bearer ${token}` } });
       const users = await res.json();
-      // للتبسيط، لو وجد مستخدم واحد نفتح محادثة، أو نعرضهم
-      if (users.length === 1) {
-        const chatRes = await fetch(`${API_URL}/api/chats`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ userId: users[0]._id })
+      const sr = $('searchResults');
+      if (!users.length) { sr.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-secondary);">لا نتائج</div>'; }
+      else {
+        sr.innerHTML = users.map(u => `<div class="search-result-item" data-id="${u._id}"><div class="chat-item-avatar" style="width:36px; height:36px; font-size:14px;">${u.username.charAt(0)}</div><div>${u.username}<br><small style="color:var(--text-secondary);">${u.phone || u.email}</small></div></div>`).join('');
+        sr.querySelectorAll('.search-result-item').forEach(el => {
+          el.addEventListener('click', async () => {
+            sr.classList.remove('show'); $('searchInput').value = '';
+            const chatRes = await fetch(`${API_URL}/api/chats`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ userId: el.dataset.id }) });
+            const chat = await chatRes.json();
+            loadChats(); setTimeout(() => openChat(chat), 300);
+          });
         });
-        const chat = await chatRes.json();
-        openChat(chat);
       }
+      sr.classList.add('show');
     }, 500);
   });
 
