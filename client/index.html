@@ -26,153 +26,98 @@
     body { height: 100vh; height: 100dvh; overflow: hidden; background: var(--bg-app); transition: background 0.3s; }
     .app { display: flex; height: 100vh; height: 100dvh; background: var(--bg-app); width: 100%; }
 
-    /* ===== Sidebar ===== */
+    /* Sidebar */
     .sidebar { width: 380px; background: var(--bg-sidebar); border-left: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease; }
     .sidebar-header { background: var(--bg-header); color: var(--text-header); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-    .user-info { display: flex; align-items: center; gap: 12px; }
-    .user-avatar { width: 42px; height: 42px; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; flex-shrink: 0; }
-    .user-details h3 { font-size: 15px; font-weight: 600; }
+    .user-avatar { width: 42px; height: 42px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; }
     .header-actions { display: flex; gap: 6px; position: relative; }
-    .icon-btn { width: 38px; height: 38px; background: rgba(255,255,255,0.15); border: none; border-radius: 50%; color: var(--text-header); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    .icon-btn:hover { background: rgba(255,255,255,0.3); }
+    .icon-btn { width: 38px; height: 38px; background: rgba(255,255,255,0.15); border: none; border-radius: 50%; color: var(--text-header); font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     
-    /* Dropdown */
     .dropdown-menu { position: absolute; top: 48px; left: 0; background: var(--bg-modal); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 6px; min-width: 160px; z-index: 100; display: none; }
     .dropdown-menu.show { display: block; }
     .dropdown-item { padding: 10px 14px; cursor: pointer; border-radius: 6px; font-size: 14px; color: var(--text-primary); }
     .dropdown-item:hover { background: var(--bg-hover); }
 
-    /* Drawer */
-    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; backdrop-filter: blur(2px); }
+    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; }
     .drawer-overlay.show { display: block; }
-    .drawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100%; height: 100dvh; background: var(--bg-sidebar); z-index: 1001; display: flex; flex-direction: column; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .drawer { position: fixed; top: 0; right: -400px; width: 100%; max-width: 380px; height: 100%; height: 100dvh; background: var(--bg-sidebar); z-index: 1001; display: flex; flex-direction: column; transition: right 0.3s; }
     .drawer.open { right: 0; }
     .drawer-header { background: var(--bg-header); color: var(--text-header); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
     .drawer-body { flex: 1; overflow-y: auto; }
     .drawer-item { padding: 15px 20px; display: flex; align-items: center; gap: 15px; cursor: pointer; border-bottom: 1px solid var(--border); color: var(--text-primary); }
-    .drawer-item:hover { background: var(--bg-hover); }
-    .drawer-item-icon { width: 40px; height: 40px; background: var(--bg-hover); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
     .drawer-item.danger { color: var(--danger); }
 
-    /* Search & Chats */
     .search-box { padding: 10px 15px; background: var(--bg-input); border-bottom: 1px solid var(--border); }
-    .search-box input { width: 100%; padding: 10px 15px; border: none; border-radius: 8px; background: var(--bg-input-field); color: var(--text-primary); font-size: 14px; }
-    .search-results { display: none; max-height: 250px; overflow-y: auto; background: var(--bg-sidebar); border-bottom: 1px solid var(--border); position: absolute; width: 100%; z-index: 50; top: 100px; }
+    .search-box input { width: 100%; padding: 10px 15px; border: none; border-radius: 8px; background: var(--bg-input-field); color: var(--text-primary); }
+    .search-results { display: none; max-height: 250px; overflow-y: auto; background: var(--bg-sidebar); position: absolute; width: 100%; z-index: 50; top: 100px; }
     .search-results.show { display: block; }
     .search-result-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border); }
-    .search-result-item:hover { background: var(--bg-hover); }
     
-    .chats-list { flex: 1; overflow-y: auto; background: var(--bg-sidebar); position: relative; }
+    .chats-list { flex: 1; overflow-y: auto; background: var(--bg-sidebar); }
     .chat-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; border-bottom: 1px solid var(--border); }
-    .chat-item:hover { background: var(--bg-hover); }
-    .chat-item.active { background: var(--bg-active); }
-    .chat-item-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-dark)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; flex-shrink: 0; }
-    .chat-item-content { flex: 1; min-width: 0; }
+    .chat-item-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; flex-shrink: 0; }
     .chat-item-name { font-weight: 600; color: var(--text-primary); font-size: 15px; }
     .chat-item-preview { font-size: 13px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* Chat Area */
-    .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); position: relative; width: 100%; }
+    .chat-area { flex: 1; display: flex; flex-direction: column; background: var(--bg-chat); position: relative; }
     .chat-header { background: var(--bg-header); color: var(--text-header); padding: 10px 20px; display: flex; align-items: center; gap: 15px; z-index: 10; }
     .messages-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 1; }
-    .message { max-width: 75%; padding: 6px; border-radius: 8px; background: var(--bg-message); box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; word-wrap: break-word; align-self: flex-start; }
+    
+    /* الرسالة */
+    .message { max-width: 80%; padding: 6px; border-radius: 8px; background: var(--bg-message); box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; word-wrap: break-word; align-self: flex-start; display: flex; gap: 5px; align-items: flex-start; }
     .message.sent { background: var(--bg-message-sent); align-self: flex-end; }
+    .message-body { flex: 1; min-width: 0; }
     .message-content { font-size: 14.5px; color: var(--text-primary); padding: 4px 6px; }
-    .message-media { max-width: 320px; border-radius: 6px; overflow: hidden; cursor: pointer; background: #000; display: block; margin: 2px 0; }
-    .message-media img, .message-media video { width: 100%; max-height: 400px; display: block; object-fit: cover; }
+    
+    /* زر الثلاث نقاط داخل الرسالة */
+    .msg-menu-btn { background: transparent; border: none; color: var(--text-secondary); font-size: 18px; cursor: pointer; padding: 0 5px; display: flex; align-items: center; justify-content: center; opacity: 0.6; }
+    .msg-menu-btn:hover { opacity: 1; }
 
-    /* ===== 💬 شريط الإدخال (مثل واتساب) ===== */
-    .message-input-area { 
-      background: var(--bg-input); 
-      padding: 8px 10px; 
-      display: flex; 
-      align-items: center; 
-      gap: 6px; /* مسافة صغيرة بين الأزرار */
-      z-index: 10; 
-      padding-bottom: max(8px, env(safe-area-inset-bottom));
-    }
+    .message-media { max-width: 280px; border-radius: 6px; overflow: hidden; margin: 2px 0; }
+    .message-media img, .message-media video { width: 100%; max-height: 350px; object-fit: cover; }
 
-    .message-input-area input[type="text"] { 
-      flex: 1; 
-      padding: 12px 16px; 
-      border: none; 
-      border-radius: 24px; 
-      background: var(--bg-input-field); 
-      color: var(--text-primary); 
-      font-size: 15px; 
-      outline: none;
-      min-width: 0; /* مهم لمنع تمدد الحقل */
-    }
+    /* قائمة السياق للرسائل */
+    .context-menu { position: fixed; background: var(--bg-modal); border-radius: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.3); padding: 6px; min-width: 150px; z-index: 5000; display: none; }
+    .context-menu.show { display: block; }
+    .context-item { padding: 10px 15px; cursor: pointer; border-radius: 6px; font-size: 14px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
+    .context-item:hover { background: var(--bg-hover); }
+    .context-item.danger { color: var(--danger); }
 
-    .camera-btn, .mic-btn { 
-      width: 44px; 
-      height: 44px; 
-      background: transparent; 
-      border: none; 
-      cursor: pointer; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      color: var(--text-secondary); 
-      flex-shrink: 0; 
-      border-radius: 50%;
-      transition: 0.2s;
-    }
-    .camera-btn:active, .mic-btn:active { background: rgba(0,0,0,0.1); }
+    /* شريط الإدخال */
+    .message-input-area { background: var(--bg-input); padding: 8px 10px; display: flex; align-items: center; gap: 6px; padding-bottom: max(8px, env(safe-area-inset-bottom)); }
+    .message-input-area input[type="text"] { flex: 1; padding: 12px 16px; border: none; border-radius: 24px; background: var(--bg-input-field); color: var(--text-primary); font-size: 15px; outline: none; min-width: 0; }
+    .camera-btn, .mic-btn { width: 44px; height: 44px; background: transparent; border: none; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); flex-shrink: 0; }
     .camera-btn svg, .mic-btn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; }
-
-    .send-btn { 
-      width: 44px; 
-      height: 44px; 
-      background: var(--accent); 
-      color: #fff; 
-      border: none; 
-      border-radius: 50%; 
-      font-size: 18px; 
-      cursor: pointer; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      flex-shrink: 0; 
-      margin-right: 2px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .send-btn:active { background: var(--accent-dark); }
+    .send-btn { width: 44px; height: 44px; background: var(--accent); color: #fff; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .send-btn svg { width: 20px; height: 20px; fill: #fff; margin-right: 2px; }
 
-    .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); padding: 40px; text-align: center; }
+    .welcome-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); }
 
-    /* Modals & Utilities */
+    /* Modal */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.show { display: flex; }
-    .modal-content { background: var(--bg-modal); border-radius: 12px; padding: 25px; width: 100%; max-width: 400px; color: var(--text-primary); }
-    .modal-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-input-field); color: var(--text-primary); margin-bottom: 15px; font-family: inherit; }
+    .modal-content { background: var(--bg-modal); border-radius: 12px; padding: 25px; width: 100%; max-width: 400px; color: var(--text-primary); max-height: 80vh; display: flex; flex-direction: column; }
+    .modal-input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-input-field); color: var(--text-primary); margin-bottom: 15px; }
     .modal-btn { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
-    .modal-btn.cancel { background: var(--bg-input); color: var(--text-secondary); margin-left: 10px; }
+    .modal-btn.cancel { background: var(--bg-input); color: var(--text-secondary); }
     .modal-btn.primary { background: var(--accent); color: #fff; }
-    .modal-btn.danger { background: var(--danger); color: #fff; }
-    .modal-actions { display: flex; justify-content: flex-end; margin-top: 15px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
+    
+    .forward-list { flex: 1; overflow-y: auto; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; }
+    .forward-item { padding: 12px 15px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid var(--border); }
+    .forward-item:hover { background: var(--bg-hover); }
 
     .hidden { display: none !important; }
-    .toast { position: fixed; top: 20px; right: 50%; transform: translateX(50%); background: var(--bg-header); color: var(--text-header); padding: 12px 24px; border-radius: 8px; z-index: 9999; opacity: 0; transition: 0.3s; pointer-events: none; }
+    .toast { position: fixed; top: 20px; right: 50%; transform: translateX(50%); background: var(--bg-header); color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 9999; opacity: 0; transition: 0.3s; }
     .toast.show { opacity: 1; }
-    .toast.error { background: var(--danger); }
 
-    /* ===== Responsive Design ===== */
     @media (max-width: 768px) {
       .sidebar { width: 100%; position: absolute; z-index: 20; height: 100%; }
       .sidebar.hidden { transform: translateX(100%); }
       .chat-area { width: 100%; }
-      .message { max-width: 85%; }
-      .search-results { position: fixed; top: 130px; right: 0; width: 100%; }
       .back-btn-mobile { display: flex !important; }
-      .message-input-area { padding: 6px 8px; gap: 4px; }
-      .camera-btn, .mic-btn, .send-btn { width: 38px; height: 38px; }
-      .camera-btn svg, .mic-btn svg { width: 20px; height: 20px; }
     }
-    @media (min-width: 769px) {
-      .back-btn-mobile { display: none !important; }
-    }
+    @media (min-width: 769px) { .back-btn-mobile { display: none !important; } }
   </style>
 </head>
 <body>
@@ -181,7 +126,7 @@
       <div class="sidebar-header">
         <div class="user-info">
           <div class="user-avatar" id="myAvatar">أ</div>
-          <div class="user-details"><h3 id="myUsername">...</h3></div>
+          <div><h3 id="myUsername">...</h3></div>
         </div>
         <div class="header-actions">
           <button class="icon-btn" id="themeToggle">🌙</button>
@@ -201,7 +146,6 @@
     <main class="chat-area" id="chatArea">
       <div class="welcome-screen" id="welcomeScreen">
         <h2>💬 Wansa Web</h2>
-        <p>اختر محادثة للبدء</p>
       </div>
       <div id="activeChat" class="hidden" style="display: flex; flex-direction: column; height: 100%;">
         <div class="chat-header">
@@ -211,29 +155,34 @@
         </div>
         <div class="messages-container" id="messagesContainer"></div>
         
-        <!-- شريط الإدخال الجديد -->
         <div class="message-input-area">
-          <!-- 1. الكاميرا -->
-          <button class="camera-btn" id="cameraBtn">
-            <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          </button>
+          <button class="camera-btn" id="cameraBtn"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
           <input type="file" id="mediaInput" accept="image/*,video/*" style="display: none;">
-          
-          <!-- 2. المايك -->
-          <button class="mic-btn" id="micBtn">
-            <svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-          </button>
-
-          <!-- 3. حقل النص -->
+          <button class="mic-btn"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
           <input type="text" id="messageInput" placeholder="اكتب رسالة...">
-          
-          <!-- 4. زر الإرسال -->
-          <button class="send-btn" id="sendBtn">
-            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-          </button>
+          <button class="send-btn" id="sendBtn"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- قائمة السياق للرسالة -->
+  <div class="context-menu" id="msgContextMenu">
+    <div class="context-item" data-action="reply">↩️ رد</div>
+    <div class="context-item" data-action="copy">📋 نسخ</div>
+    <div class="context-item" data-action="forward">➡️ إعادة توجيه</div>
+    <div class="context-item danger" data-action="delete" id="ctxDeleteBtn">🗑️ حذف</div>
+  </div>
+
+  <!-- نافذة إعادة التوجيه -->
+  <div class="modal-overlay" id="forwardModal">
+    <div class="modal-content">
+      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">إعادة توجيه إلى:</div>
+      <div class="forward-list" id="forwardList"></div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeModal('forwardModal')">إلغاء</button>
+      </div>
+    </div>
   </div>
 
   <!-- Drawer -->
@@ -241,22 +190,19 @@
   <div class="drawer" id="settingsDrawer">
     <div class="drawer-header"><h2>الإعدادات</h2><button class="icon-btn" id="closeDrawerBtn" style="background: transparent;">✕</button></div>
     <div class="drawer-body">
-      <div class="drawer-item" id="profileBtn"><div class="drawer-item-icon">👤</div><div>الملف الشخصي</div></div>
-      <div class="drawer-item" id="statusBtn"><div class="drawer-item-icon">🟢</div><div>إنشاء حالة</div></div>
-      <div class="drawer-item" id="groupBtn"><div class="drawer-item-icon">👥</div><div>إنشاء مجموعة</div></div>
-      <div class="drawer-item" id="privacyBtn"><div class="drawer-item-icon">🔒</div><div>الخصوصية</div></div>
-      <div class="drawer-item danger" id="deleteAccountBtn"><div class="drawer-item-icon">🗑️</div><div>حذف الحساب</div></div>
-      <div class="drawer-item danger" id="logoutBtn"><div class="drawer-item-icon">🚪</div><div>تسجيل خروج</div></div>
+      <div class="drawer-item" id="profileBtn"><div>👤</div> الملف الشخصي</div>
+      <div class="drawer-item" id="statusBtn"><div>🟢</div> إنشاء حالة</div>
+      <div class="drawer-item" id="groupBtn"><div>👥</div> إنشاء مجموعة</div>
+      <div class="drawer-item" id="privacyBtn"><div>🔒</div> الخصوصية</div>
+      <div class="drawer-item danger" id="deleteAccountBtn"><div>🗑️</div> حذف الحساب</div>
+      <div class="drawer-item danger" id="logoutBtn"><div>🚪</div> تسجيل خروج</div>
     </div>
   </div>
 
-  <!-- Modals -->
+  <!-- Modals (Profile, Status, Group, Privacy, Delete) -->
   <div class="modal-overlay" id="profileModal">
     <div class="modal-content">
-      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">الملف الشخصي</div>
-      <div style="text-align:center; margin-bottom:15px;">
-        <div id="profileAvatarLarge" style="width: 80px; height: 80px; background: var(--accent); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 30px; color: white;">👤</div>
-      </div>
+      <div style="font-size:18px; margin-bottom:15px;">الملف الشخصي</div>
       <input type="text" class="modal-input" id="profileUsername" disabled>
       <input type="text" class="modal-input" id="profileContact" disabled>
       <textarea class="modal-input" id="profileBio" rows="2" placeholder="السيرة الذاتية"></textarea>
@@ -269,10 +215,10 @@
 
   <div class="modal-overlay" id="statusOptionsModal">
     <div class="modal-content">
-      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">إنشاء حالة</div>
+      <div style="font-size:18px; margin-bottom:15px;">إنشاء حالة</div>
       <div style="display:flex; gap:10px;">
-        <div class="modal-btn primary" style="flex:1; text-align:center;" id="statusTextOpt">📝 نص</div>
-        <div class="modal-btn primary" style="flex:1; text-align:center;" id="statusMediaOpt">📷 صورة</div>
+        <div class="modal-btn primary" style="flex:1; text-align:center;" onclick="document.getElementById('statusOptionsModal').classList.remove('show'); document.getElementById('statusTextModal').classList.add('show')">📝 نص</div>
+        <div class="modal-btn primary" style="flex:1; text-align:center;">📷 صورة</div>
       </div>
       <div class="modal-actions"><button class="modal-btn cancel" onclick="closeModal('statusOptionsModal')">إلغاء</button></div>
     </div>
@@ -280,8 +226,8 @@
 
   <div class="modal-overlay" id="statusTextModal">
     <div class="modal-content">
-      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">حالة نصية</div>
-      <textarea class="modal-input" id="statusTextInput" rows="3" placeholder="اكتب حالتك هنا..."></textarea>
+      <div style="font-size:18px; margin-bottom:15px;">حالة نصية</div>
+      <textarea class="modal-input" id="statusTextInput" rows="3" placeholder="اكتب حالتك..."></textarea>
       <div class="modal-actions">
         <button class="modal-btn cancel" onclick="closeModal('statusTextModal')">إلغاء</button>
         <button class="modal-btn primary" id="publishTextStatusBtn">نشر</button>
@@ -291,7 +237,7 @@
 
   <div class="modal-overlay" id="groupModal">
     <div class="modal-content">
-      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">إنشاء مجموعة</div>
+      <div style="font-size:18px; margin-bottom:15px;">إنشاء مجموعة</div>
       <input type="text" class="modal-input" id="groupNameInput" placeholder="اسم المجموعة">
       <div id="groupMembersList" style="max-height: 150px; overflow-y: auto; margin-bottom: 15px; border: 1px solid var(--border); padding: 10px; border-radius: 8px;"></div>
       <div class="modal-actions">
@@ -303,7 +249,7 @@
 
   <div class="modal-overlay" id="privacyModal">
     <div class="modal-content">
-      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">الخصوصية</div>
+      <div style="font-size:18px; margin-bottom:15px;">الخصوصية</div>
       <div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid var(--border);">
         <div>إخفاء حالة النشاط</div>
         <input type="checkbox" id="hideActivityToggle">
@@ -318,7 +264,7 @@
 
   <div class="modal-overlay" id="viewersModal" style="z-index:2100;">
     <div class="modal-content">
-      <div style="font-size:18px; font-weight:600; margin-bottom:15px;">من يشاهد حالتي</div>
+      <div style="font-size:18px; margin-bottom:15px;">من يشاهد حالتي</div>
       <div style="padding:15px 0; cursor:pointer; border-bottom:1px solid var(--border);" onclick="setViewers('everyone')">الجميع</div>
       <div style="padding:15px 0; cursor:pointer; border-bottom:1px solid var(--border);" onclick="setViewers('contacts')">جهات الاتصال</div>
       <div style="padding:15px 0; cursor:pointer;" onclick="setViewers('selected')">أشخاص محددون</div>
@@ -328,12 +274,12 @@
 
   <div class="modal-overlay" id="deleteAccountModal">
     <div class="modal-content">
-      <div style="color:var(--danger); font-size:18px; font-weight:600; margin-bottom:15px;">⚠️ حذف الحساب</div>
-      <p style="margin-bottom: 15px; font-size: 14px;">هل أنت متأكد؟ هذا الإجراء لا يمكن التراجع عنه.</p>
-      <input type="password" class="modal-input" id="deletePasswordInput" placeholder="اكتب كلمة المرور للتأكيد">
+      <div style="color:var(--danger); font-size:18px; margin-bottom:15px;">⚠️ حذف الحساب</div>
+      <p style="margin-bottom: 15px;">هل أنت متأكد؟</p>
+      <input type="password" class="modal-input" id="deletePasswordInput" placeholder="كلمة المرور">
       <div class="modal-actions">
         <button class="modal-btn cancel" onclick="closeModal('deleteAccountModal')">إلغاء</button>
-        <button class="modal-btn danger" id="confirmDeleteBtn">حذف نهائي</button>
+        <button class="modal-btn danger" id="confirmDeleteBtn" style="background:var(--danger); color:#fff;">حذف</button>
       </div>
     </div>
   </div>
@@ -341,23 +287,22 @@
   <div class="toast" id="toast"></div>
 
 <script>
-  // ==========================================
-  // الأساسيات
-  // ==========================================
   const API_URL = window.location.origin;
   const token = localStorage.getItem('token');
   const myUserId = localStorage.getItem('userId');
   const myUsername = localStorage.getItem('username');
-
   if (!token || !myUserId) window.location.href = '/login.html';
 
   const socket = io({ auth: { token } });
   let currentChat = null;
   let chats = [];
+  let windowMessages = [];
+  let selectedMessage = null;
   const $ = (id) => document.getElementById(id);
 
   // زر الرجوع
   window.addEventListener('popstate', () => {
+    if ($('msgContextMenu').classList.contains('show')) { $('msgContextMenu').classList.remove('show'); return; }
     const openModal = document.querySelector('.modal-overlay.show');
     if (openModal) { openModal.classList.remove('show'); return; }
     if ($('settingsDrawer').classList.contains('open')) {
@@ -378,92 +323,76 @@
     else { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); $('themeToggle').textContent = '☀️'; }
   });
 
-  $('myUsername').textContent = myUsername || 'أنا';
-  $('myAvatar').textContent = (myUsername || 'أ').charAt(0).toUpperCase();
+  $('myUsername').textContent = myUsername;
+  $('myAvatar').textContent = myUsername.charAt(0).toUpperCase();
 
   // القوائم
   $('menuBtn').addEventListener('click', (e) => { e.stopPropagation(); $('dropdownMenu').classList.toggle('show'); });
   document.addEventListener('click', (e) => { if (!e.target.closest('.header-actions')) $('dropdownMenu').classList.remove('show'); });
   $('openSettingsBtn').addEventListener('click', () => { $('dropdownMenu').classList.remove('show'); $('settingsDrawer').classList.add('open'); $('drawerOverlay').classList.add('show'); });
-  function closeDrawer() { $('settingsDrawer').classList.remove('open'); $('drawerOverlay').classList.remove('show'); }
-  $('closeDrawerBtn').addEventListener('click', closeDrawer);
-  $('drawerOverlay').addEventListener('click', closeDrawer);
-
+  $('closeDrawerBtn').addEventListener('click', () => { $('settingsDrawer').classList.remove('open'); $('drawerOverlay').classList.remove('show'); });
+  $('drawerOverlay').addEventListener('click', () => { $('settingsDrawer').classList.remove('open'); $('drawerOverlay').classList.remove('show'); });
   window.closeModal = (id) => $(id).classList.remove('show');
-  window.showToast = (msg, type = '') => {
-    const t = $('toast'); t.textContent = msg; t.className = `toast show ${type}`; setTimeout(() => t.classList.remove('show'), 3000);
-  };
+  window.showToast = (msg) => { const t = $('toast'); t.textContent = msg; t.className = 'toast show'; setTimeout(() => t.classList.remove('show'), 3000); };
 
-  // الميزات
+  // الأزرار العامة
   $('profileBtn').addEventListener('click', async () => {
-    closeDrawer();
+    $('settingsDrawer').classList.remove('open'); $('drawerOverlay').classList.remove('show');
     const res = await fetch(`${API_URL}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
-    const data = await res.json(); currentUser = data.user;
-    $('profileUsername').value = currentUser.username; $('profileContact').value = currentUser.phone || currentUser.email || ''; $('profileBio').value = currentUser.bio || '';
+    const data = await res.json();
+    $('profileUsername').value = data.user.username; $('profileContact').value = data.user.phone || data.user.email; $('profileBio').value = data.user.bio || '';
     $('profileModal').classList.add('show');
   });
   $('saveProfileBtn').addEventListener('click', async () => {
     await fetch(`${API_URL}/api/users/profile`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ bio: $('profileBio').value }) });
-    showToast('✅ تم الحفظ'); closeModal('profileModal');
+    showToast('تم الحفظ'); closeModal('profileModal');
   });
-  
-  $('statusBtn').addEventListener('click', () => { closeDrawer(); $('statusOptionsModal').classList.add('show'); });
-  $('statusTextOpt').addEventListener('click', () => { closeModal('statusOptionsModal'); $('statusTextModal').classList.add('show'); });
+  $('statusBtn').addEventListener('click', () => { $('settingsDrawer').classList.remove('open'); $('drawerOverlay').classList.remove('show'); $('statusOptionsModal').classList.add('show'); });
   $('publishTextStatusBtn').addEventListener('click', async () => {
-    const content = $('statusTextInput').value.trim(); if (!content) return showToast('اكتب شيئاً', 'error');
-    await fetch(`${API_URL}/api/status`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ type: 'text', content }) });
-    showToast('✅ تم النشر'); $('statusTextInput').value = ''; closeModal('statusTextModal');
+    await fetch(`${API_URL}/api/status`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ type: 'text', content: $('statusTextInput').value }) });
+    showToast('تم النشر'); closeModal('statusTextModal'); $('statusTextInput').value = '';
   });
-
   $('groupBtn').addEventListener('click', async () => {
-    closeDrawer();
+    $('settingsDrawer').classList.remove('open'); $('drawerOverlay').classList.remove('show');
     const res = await fetch(`${API_URL}/api/chats/users?search=@`, { headers: { Authorization: `Bearer ${token}` } });
     const users = await res.json();
-    $('groupMembersList').innerHTML = users.map(u => `<label style="display:flex; gap:10px; padding:5px;"><input type="checkbox" value="${u._id}" class="group-member-cb"> ${u.username}</label>`).join('') || 'لا يوجد مستخدمون';
+    $('groupMembersList').innerHTML = users.map(u => `<label style="display:flex; gap:10px; padding:5px;"><input type="checkbox" value="${u._id}" class="group-member-cb"> ${u.username}</label>`).join('');
     $('groupModal').classList.add('show');
   });
   $('createGroupBtn').addEventListener('click', async () => {
-    const name = $('groupNameInput').value.trim(); const members = Array.from(document.querySelectorAll('.group-member-cb:checked')).map(cb => cb.value);
-    if (!name || members.length < 1) return showToast('أكمل البيانات', 'error');
-    await fetch(`${API_URL}/api/chats/group`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ name, members }) });
-    showToast('✅ تم الإنشاء'); closeModal('groupModal'); loadChats();
+    const members = Array.from(document.querySelectorAll('.group-member-cb:checked')).map(cb => cb.value);
+    await fetch(`${API_URL}/api/chats/group`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ name: $('groupNameInput').value, members }) });
+    showToast('تم الإنشاء'); closeModal('groupModal'); loadChats();
   });
-
   $('privacyBtn').addEventListener('click', async () => {
-    closeDrawer();
+    $('settingsDrawer').classList.remove('open'); $('drawerOverlay').classList.remove('show');
     const res = await fetch(`${API_URL}/api/auth/me`, { headers: { Authorization: `Bearer ${token}` } });
-    const data = await res.json();
-    $('hideActivityToggle').checked = data.user.privacy?.hideActivity || false;
+    const data = await res.json(); $('hideActivityToggle').checked = data.user.privacy?.hideActivity;
     $('privacyModal').classList.add('show');
   });
   $('hideActivityToggle').addEventListener('change', async (e) => {
     await fetch(`${API_URL}/api/users/privacy`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ hideActivity: e.target.checked }) });
-    showToast('✅ تم التحديث');
   });
   window.setViewers = async (val) => {
     await fetch(`${API_URL}/api/users/privacy`, { method: 'PUT', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ statusViewers: val }) });
-    closeModal('viewersModal'); showToast('✅ تم التحديث');
+    closeModal('viewersModal');
   };
-
-  $('deleteAccountBtn').addEventListener('click', () => { closeDrawer(); $('deleteAccountModal').classList.add('show'); });
+  $('deleteAccountBtn').addEventListener('click', () => { $('settingsDrawer').classList.remove('open'); $('drawerOverlay').classList.remove('show'); $('deleteAccountModal').classList.add('show'); });
   $('confirmDeleteBtn').addEventListener('click', async () => {
-    const password = $('deletePasswordInput').value; if (!password) return showToast('اكتب كلمة المرور', 'error');
-    const res = await fetch(`${API_URL}/api/users/account`, { method: 'DELETE', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ password }) });
-    const data = await res.json(); if (!res.ok) return showToast(data.error, 'error');
-    localStorage.clear(); window.location.href = '/register.html';
+    const res = await fetch(`${API_URL}/api/users/account`, { method: 'DELETE', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ password: $('deletePasswordInput').value }) });
+    if (res.ok) { localStorage.clear(); window.location.href = '/register.html'; } else showToast('كلمة المرور خطأ');
   });
+  $('logoutBtn').addEventListener('click', () => { localStorage.clear(); window.location.href = '/login.html'; });
 
-  $('logoutBtn').addEventListener('click', () => { if (confirm('تسجيل الخروج؟')) { localStorage.clear(); socket.disconnect(); window.location.href = '/login.html'; } });
-
-  // الدردشة
+  // ==========================================
+  // الدردشة وإدارة الرسائل
+  // ==========================================
   async function loadChats() {
     const res = await fetch(`${API_URL}/api/chats`, { headers: { Authorization: `Bearer ${token}` } });
     chats = await res.json();
-    const list = $('chatsList');
-    if (!chats.length) { list.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--text-secondary);">لا توجد محادثات</div>'; return; }
-    list.innerHTML = chats.map(c => {
+    $('chatsList').innerHTML = chats.map(c => {
       const other = c.members.find(m => m._id !== myUserId); const name = c.isGroup ? c.name : (other?.username || 'مجهول');
-      return `<div class="chat-item" data-id="${c._id}"><div class="chat-item-avatar">${name.charAt(0)}</div><div class="chat-item-content"><div class="chat-item-name">${name}</div><div class="chat-item-preview">${c.lastMessage?.content || '...'}</div></div></div>`;
+      return `<div class="chat-item" data-id="${c._id}"><div class="chat-item-avatar">${name.charAt(0)}</div><div><div class="chat-item-name">${name}</div><div class="chat-item-preview">${c.lastMessage?.content || '...'}</div></div></div>`;
     }).join('');
     document.querySelectorAll('.chat-item').forEach(el => el.addEventListener('click', () => openChat(chats.find(c => c._id === el.dataset.id))));
   }
@@ -475,26 +404,131 @@
     $('welcomeScreen').style.display = 'none'; $('activeChat').classList.remove('hidden'); $('sidebar').classList.add('hidden');
     history.pushState({ view: 'chat' }, '', '#chat');
     socket.emit('joinChat', chat._id);
+    
     const res = await fetch(`${API_URL}/api/messages/${chat._id}`, { headers: { Authorization: `Bearer ${token}` } });
     const data = await res.json();
-    $('messagesContainer').innerHTML = (data.messages || []).map(m => {
-      let html = `<div class="message ${m.sender._id === myUserId ? 'sent' : ''}">`;
-      if (m.type === 'image') html += `<img src="${m.fileUrl}" style="max-width:100%; border-radius:5px;">`;
-      else if (m.type === 'video') html += `<video src="${m.fileUrl}" controls style="max-width:100%; border-radius:5px;"></video>`;
-      else html += `<div class="message-content">${m.content}</div>`;
-      return html + `</div>`;
-    }).join('');
+    windowMessages = data.messages || [];
+    renderMessages();
+  }
+
+  function renderMessages() {
+    $('messagesContainer').innerHTML = windowMessages.map(m => renderSingleMessage(m)).join('');
     scrollToBottom();
   }
 
-  $('backBtn').addEventListener('click', () => history.back());
+  function renderSingleMessage(m) {
+    const isSent = m.sender._id === myUserId;
+    let mediaHtml = '';
+    if (m.type === 'image') mediaHtml = `<img src="${m.fileUrl}" style="max-width:100%; border-radius:5px; margin-bottom:5px;">`;
+    else if (m.type === 'video') mediaHtml = `<video src="${m.fileUrl}" controls style="max-width:100%; border-radius:5px; margin-bottom:5px;"></video>`;
+    
+    let contentHtml = m.content ? `<div class="message-content">${m.content}</div>` : '';
+    if (m.forwarded) contentHtml = `<div style="font-size:10px; color:var(--text-secondary); padding:0 6px;">↪️ تم إعادة توجيهها</div>` + contentHtml;
 
+    return `
+      <div class="message ${isSent ? 'sent' : ''}" data-id="${m._id}">
+        <div class="message-body">
+          ${mediaHtml}
+          ${contentHtml}
+        </div>
+        <button class="msg-menu-btn" onclick="openMsgMenu(event, '${m._id}')">⋮</button>
+      </div>
+    `;
+  }
+
+  // قائمة الثلاث نقاط
+  window.openMsgMenu = (e, id) => {
+    e.stopPropagation();
+    selectedMessage = windowMessages.find(m => m._id === id);
+    if (!selectedMessage) return;
+    
+    // التحقق هل أنا المرسل
+    const isSent = selectedMessage.sender._id === myUserId;
+    $('ctxDeleteBtn').style.display = isSent ? 'flex' : 'none';
+
+    const menu = $('msgContextMenu');
+    menu.classList.add('show');
+    menu.style.left = Math.min(e.clientX, window.innerWidth - 160) + 'px';
+    menu.style.top = Math.min(e.clientY, window.innerHeight - 200) + 'px';
+    history.pushState({ view: 'context' }, '', '#context');
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.msg-menu-btn') && !e.target.closest('#msgContextMenu')) {
+      $('msgContextMenu').classList.remove('show');
+    }
+  });
+
+  // إجراءات القائمة
+  document.querySelectorAll('#msgContextMenu .context-item').forEach(item => {
+    item.addEventListener('click', async () => {
+      const action = item.dataset.action;
+      $('msgContextMenu').classList.remove('show');
+      if (!selectedMessage) return;
+
+      if (action === 'copy') {
+        navigator.clipboard.writeText(selectedMessage.content || 'ملف');
+        showToast('تم النسخ');
+      } else if (action === 'delete') {
+        socket.emit('deleteMessage', { messageId: selectedMessage._id, chatId: currentChat._id, userId: myUserId });
+      } else if (action === 'forward') {
+        $('forwardModal').classList.add('show');
+        loadFriendsForForward();
+      } else if (action === 'reply') {
+        // رد بسيط (يرسل الرسالة مع إشارة للرد)
+        socket.emit('sendMessage', { chatId: currentChat._id, senderId: myUserId, content: `↩️ رداً على: "${selectedMessage.content}"\n\n`, type: 'text' });
+      }
+    });
+  });
+
+  // إعادة التوجيه
+  async function loadFriendsForForward() {
+    const res = await fetch(`${API_URL}/api/chats/friends/list`, { headers: { Authorization: `Bearer ${token}` } });
+    const friends = await res.json();
+    
+    // إزالة المكرر
+    const uniqueFriends = [];
+    const map = new Map();
+    for (const f of friends) { if (!map.has(f._id)) { map.set(f._id, true); uniqueFriends.push(f); } }
+
+    $('forwardList').innerHTML = uniqueFriends.map(f => 
+      `<div class="forward-item" onclick="doForward('${f._id}')">
+        <div class="chat-item-avatar" style="width:30px; height:30px; font-size:12px;">${f.username.charAt(0)}</div>
+        <div>${f.username}</div>
+      </div>`
+    ).join('') || '<div style="padding:15px; text-align:center;">لا يوجد أصدقاء</div>';
+  }
+
+  window.doForward = async (userId) => {
+    closeModal('forwardModal');
+    if (!selectedMessage) return;
+    showToast('جاري الإرسال...');
+    
+    // 1. إنشاء أو جلب المحادثة مع الصديق
+    const chatRes = await fetch(`${API_URL}/api/chats`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ userId }) });
+    const newChat = await chatRes.json();
+
+    // 2. إرسال الرسالة في المحادثة الجديدة
+    socket.emit('sendMessage', {
+      chatId: newChat._id,
+      senderId: myUserId,
+      content: selectedMessage.content,
+      type: selectedMessage.type,
+      fileUrl: selectedMessage.fileUrl,
+      forwarded: true
+    });
+
+    showToast('✅ تم إعادة التوجيه');
+  };
+
+  // إرسال رسالة جديدة
   $('sendBtn').addEventListener('click', () => {
     const text = $('messageInput').value.trim(); if (!text || !currentChat) return;
     socket.emit('sendMessage', { chatId: currentChat._id, senderId: myUserId, content: text, type: 'text' });
     $('messageInput').value = '';
   });
 
+  // رفع الملفات
   $('cameraBtn').addEventListener('click', () => $('mediaInput').click());
   $('mediaInput').addEventListener('change', async (e) => {
     const file = e.target.files[0]; if (!file || !currentChat) return;
@@ -504,40 +538,43 @@
     socket.emit('sendMessage', { chatId: currentChat._id, senderId: myUserId, content: '', type: file.type.startsWith('image') ? 'image' : 'video', fileUrl: uploadData.fileUrl });
   });
 
+  // استقبال رسائل
   socket.on('newMessage', (msg) => {
     if (currentChat && msg.chatId === currentChat._id) {
-      let html = `<div class="message ${msg.sender._id === myUserId ? 'sent' : ''}">`;
-      if (msg.type === 'image') html += `<img src="${msg.fileUrl}" style="max-width:100%; border-radius:5px;">`;
-      else if (msg.type === 'video') html += `<video src="${msg.fileUrl}" controls style="max-width:100%; border-radius:5px;"></video>`;
-      else html += `<div class="message-content">${msg.content}</div>`;
-      $('messagesContainer').innerHTML += html + `</div>`;
+      windowMessages.push(msg);
+      $('messagesContainer').innerHTML += renderSingleMessage(msg);
       scrollToBottom();
     }
     loadChats();
   });
 
+  socket.on('messageDeleted', ({ messageId }) => {
+    windowMessages = windowMessages.filter(m => m._id !== messageId);
+    renderMessages();
+  });
+
   function scrollToBottom() { const c = $('messagesContainer'); c.scrollTop = c.scrollHeight; }
 
+  // البحث
   let searchTimeout;
   $('searchInput').addEventListener('input', (e) => {
     clearTimeout(searchTimeout); const q = e.target.value.trim(); if (!q) { $('searchResults').classList.remove('show'); return; }
     searchTimeout = setTimeout(async () => {
       const res = await fetch(`${API_URL}/api/chats/users?search=${encodeURIComponent(q)}`, { headers: { Authorization: `Bearer ${token}` } });
-      const users = await res.json(); const sr = $('searchResults');
-      if (!users.length) { sr.innerHTML = '<div style="padding:15px; text-align:center; color:var(--text-secondary);">لا نتائج</div>'; }
+      const users = await res.json();
+      if (!users.length) { $('searchResults').innerHTML = '<div style="padding:15px; text-align:center;">لا نتائج</div>'; }
       else {
-        sr.innerHTML = users.map(u => `<div class="search-result-item" data-id="${u._id}"><div class="chat-item-avatar" style="width:36px; height:36px; font-size:14px;">${u.username.charAt(0)}</div><div>${u.username}<br><small style="color:var(--text-secondary);">${u.phone || u.email}</small></div></div>`).join('');
-        sr.querySelectorAll('.search-result-item').forEach(el => {
-          el.addEventListener('click', async () => {
-            sr.classList.remove('show'); $('searchInput').value = '';
-            const chatRes = await fetch(`${API_URL}/api/chats`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ userId: el.dataset.id }) });
-            const chat = await chatRes.json(); loadChats(); setTimeout(() => openChat(chat), 300);
-          });
-        });
+        $('searchResults').innerHTML = users.map(u => `<div class="search-result-item" onclick="startChat('${u._id}')">${u.username}</div>`).join('');
       }
-      sr.classList.add('show');
+      $('searchResults').classList.add('show');
     }, 500);
   });
+
+  window.startChat = async (userId) => {
+    $('searchResults').classList.remove('show'); $('searchInput').value = '';
+    const res = await fetch(`${API_URL}/api/chats`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ userId }) });
+    const chat = await res.json(); loadChats(); setTimeout(() => openChat(chat), 300);
+  };
 
   loadChats();
 </script>

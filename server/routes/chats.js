@@ -42,6 +42,31 @@ router.get('/users', auth, async (req, res) => {
 });
 
 // ==========================================
+// GET /api/chats/friends/list - جلب الأصدقاء (لإعادة التوجيه)
+// ==========================================
+router.get('/friends/list', auth, async (req, res) => {
+  try {
+    // جلب كل المحادثات الفردية التي أنا طرف فيها
+    const chats = await Chat.find({ members: req.userId, isGroup: false })
+      .populate('members', '-password');
+    
+    // استخراج المستخدمين الآخرين وإزالة المكرر
+    const friendsMap = new Map();
+    chats.forEach(chat => {
+      const other = chat.members.find(m => m._id.toString() !== req.userId);
+      if (other && !friendsMap.has(other._id.toString())) {
+        friendsMap.set(other._id.toString(), other);
+      }
+    });
+
+    res.json(Array.from(friendsMap.values()));
+  } catch (err) {
+    console.error('خطأ جلب الأصدقاء:', err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==========================================
 // POST /api/chats - إنشاء أو جلب محادثة فردية
 // ==========================================
 router.post('/', auth, async (req, res) => {
