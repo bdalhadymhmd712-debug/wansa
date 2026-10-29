@@ -25,10 +25,14 @@ const userSchema = new mongoose.Schema({
   
   // إعدادات الخصوصية
   privacy: {
-    hideActivity: { type: Boolean, default: false }, // إخفاء حالة النشاط
-    statusViewers: { type: String, enum: ['everyone', 'contacts', 'selected'], default: 'everyone' }, // من يشاهد الحالة
-    allowedViewers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] // الأشخاص المحددون
-  }
+    hideActivity: { type: Boolean, default: false },
+    statusViewers: { type: String, enum: ['everyone', 'contacts', 'selected'], default: 'everyone' },
+    allowedViewers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+  },
+
+  // إعدادات استعادة كلمة المرور
+  resetCode: { type: String, default: null },
+  resetCodeExpires: { type: Date, default: null }
 }, { timestamps: true });
 
 userSchema.pre('validate', function(next) {
@@ -39,6 +43,8 @@ userSchema.pre('validate', function(next) {
 userSchema.methods.toJSON = function() {
   const user = this.toObject();
   delete user.password;
+  delete user.resetCode;
+  delete user.resetCodeExpires;
   return user;
 };
 
