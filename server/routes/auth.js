@@ -9,6 +9,9 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 
+// استدعاء مكتبة Brevo
+const brevo = require('@getbrevo/brevo');
+
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '7d' });
 };
@@ -97,12 +100,11 @@ router.get('/me', authMiddleware, async (req, res) => {
 });
 
 // ==========================================
-// POST /api/auth/forgot-password
-// إرسال كود التحقق
+// POST /api/auth/forgot-password (إرسال الكود للبريد)
 // ==========================================
 router.post('/forgot-password', async (req, res) => {
   try {
-    const { identifier } = req.body; // البريد أو الهاتف
+    const { identifier } = req.body;
 
     if (!identifier) return res.status(400).json({ error: 'البريد أو الهاتف مطلوب' });
 
@@ -114,31 +116,54 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(404).json({ error: 'لا يوجد حساب بهذا البريد أو الهاتف' });
     }
 
+    // يجب أن يكون هناك بريد إلكتروني لإرسال الكود
+    if (!user.email) {
+      return res.status(400).json({ error: 'هذا الحساب مسجل برقم الهاتف فقط. لا يمكن إرسال كود للاستعادة.' });
+    }
+
     // توليد كود 6 أرقام
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // حفظ الكود في قاعدة البيانات مع وقت انتهاء (10 دقائق)
     user.resetCode = code;
-    user.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000);
+    user.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 دقائق
     await user.save();
 
-    // ==========================================
-    // ⚠️ ملاحظة: لا يوجد سيرفر بريد حقيقي متصل حالياً
-    // لذلك سنطبع الكود في Terminal الخاص بالسيرفر
-    // ==========================================
-    console.log('\n════════════════════════════════════════');
-    console.log('🔐 كود استعادة كلمة المرور');
-    console.log(`👤 الحساب: ${user.username}`);
-    console.log(`📧 البريد: ${user.email || 'لا يوجد'}`);
-    console.log(`📱 الهاتف: ${user.phone || 'لا يوجد'}`);
-    console.log(`🔢 الكود: ${code}`);
-    console.log('════════════════════════════════════════\n');
+    // إرسال البريد
+    try {
+      let defaultClient = brevo.ApiClient.instance;
+      let apiKey = defaultClient.authentications['api-key'];
+      apiKey.apiKey = process.env.BREVO_API_KEY;
 
-    // للاختبار: نرجع الكود في الـ Response (يجب إزالته في الإنتاج)
-    res.json({ 
-      message: '✅ تم إرسال كود التحقق. (ملاحظة: الكود يظهر في Logs السيرفر)', 
-      codeForTesting: code 
-    });
+      let apiInstance = new brevo.TransactionalEmailsApi();
+      let sendSmtpEmail = new brevo.SendSmtpEmail();
+
+      sendSmtpEmail.subject = "🔐 كود استعادة كلمة المرور - Wansa";
+      sendSmtpEmail.htmlContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; background: #f0f2f5; border-radius: 10px;">
+          <h2 style="color: #075E54; text-align: center;">Wansa</h2>
+          <div style="background: white; padding: 20px; border-radius: 8px;">
+            <p>مرحباً <strong>${user.username}</strong>،</p>
+            <p>لقد طلبت استعادة كلمة المرور الخاصة بك. إليك كود التحقق:</p>
+            <div style="text-align: center; margin: 20px 0;">
+              <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #25D366; background: #e9edef; padding: 10px 20px; border-radius: 8px;">${code}</span>
+            </div>
+            <p>هذا الكود صالح لمدة 10 دقائق فقط. إذا لم تطلب هذا، يمكنك تجاهل هذه الرسالة.</p>
+          </div>
+          <p style="text-align: center; color: #667781; font-size: 12px; margin-top: 20px;">Wansa - تطبيق المحادثة الفورية</p>
+        </div>
+      `;
+      sendSmtpEmail.sender = { "name": "Wansa", "email": "noreply@wansa.app" };
+      sendSmtpEmail.to = [{ "email": user.email, "name": user.username }];
+
+      await apiInstance.sendTransacEmail(sendSmtpEmail);
+      console.log(`✅ تم إرسال كود التحقق إلى ${user.email}`);
+
+      res.json({ message: '✅ تم إرسال كود التحقق إلى بريدك الإلكتروني' });
+
+    } catch (emailErr) {
+      console.error('فشل إرسال البريد:', emailErr);
+      return res.status(500).json({ error: 'فشل إرسال البريد. يرجى المحاولة لاحقاً.' });
+    }
 
   } catch (err) {
     console.error(err);
@@ -147,8 +172,7 @@ router.post('/forgot-password', async (req, res) => {
 });
 
 // ==========================================
-// POST /api/auth/verify-code
-// التحقق من الكود
+// POST /api/auth/verify-code (التحقق من الكود)
 // ==========================================
 router.post('/verify-code', async (req, res) => {
   try {
@@ -162,7 +186,6 @@ router.post('/verify-code', async (req, res) => {
 
     if (!user) return res.status(404).json({ error: 'المستخدم غير موجود' });
 
-    // التحقق من انتهاء صلاحية الكود
     if (!user.resetCode || user.resetCode !== code) {
       return res.status(400).json({ error: 'الكود غير صحيح' });
     }
@@ -178,8 +201,7 @@ router.post('/verify-code', async (req, res) => {
 });
 
 // ==========================================
-// POST /api/auth/reset-password
-// إعادة تعيين كلمة المرور
+// POST /api/auth/reset-password (تعيين كلمة مرور جديدة)
 // ==========================================
 router.post('/reset-password', async (req, res) => {
   try {
@@ -201,7 +223,6 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ error: 'انتهت صلاحية الكود' });
     }
 
-    // تحديث كلمة المرور وإزالة الكود
     user.password = await bcrypt.hash(newPassword, 10);
     user.resetCode = null;
     user.resetCodeExpires = null;
