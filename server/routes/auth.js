@@ -9,8 +9,8 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 
-// استدعاء مكتبة Brevo
-const brevo = require('@getbrevo/brevo');
+// استدعاء مكتبة Brevo (الطريقة الحديثة)
+const { BrevoClient } = require('@getbrevo/brevo');
 
 const generateToken = (userId) => {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE || '7d' });
@@ -116,53 +116,48 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(404).json({ error: 'لا يوجد حساب بهذا البريد أو الهاتف' });
     }
 
-    // يجب أن يكون هناك بريد إلكتروني لإرسال الكود
     if (!user.email) {
       return res.status(400).json({ error: 'هذا الحساب مسجل برقم الهاتف فقط. لا يمكن إرسال كود للاستعادة.' });
     }
 
-    // توليد كود 6 أرقام
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     
     user.resetCode = code;
     user.resetCodeExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 دقائق
     await user.save();
 
-    // إرسال البريد
     try {
-      let defaultClient = brevo.ApiClient.instance;
-      let apiKey = defaultClient.authentications['api-key'];
-      apiKey.apiKey = process.env.BREVO_API_KEY;
+      // استخدام BrevoClient
+      const brevo = new BrevoClient({ apiKey: process.env.BREVO_API_KEY });
 
-      let apiInstance = new brevo.TransactionalEmailsApi();
-      let sendSmtpEmail = new brevo.SendSmtpEmail();
-
-      sendSmtpEmail.subject = "🔐 كود استعادة كلمة المرور - Wansa";
-      sendSmtpEmail.htmlContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; background: #f0f2f5; border-radius: 10px;">
-          <h2 style="color: #075E54; text-align: center;">Wansa</h2>
-          <div style="background: white; padding: 20px; border-radius: 8px;">
-            <p>مرحباً <strong>${user.username}</strong>،</p>
-            <p>لقد طلبت استعادة كلمة المرور الخاصة بك. إليك كود التحقق:</p>
-            <div style="text-align: center; margin: 20px 0;">
-              <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #25D366; background: #e9edef; padding: 10px 20px; border-radius: 8px;">${code}</span>
+      await brevo.transactionalEmails.sendTransacEmail({
+        subject: "🔐 كود استعادة كلمة المرور - Wansa",
+        htmlContent: `
+          <div style="font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; background: #f0f2f5; border-radius: 10px;">
+            <h2 style="color: #075E54; text-align: center;">Wansa</h2>
+            <div style="background: white; padding: 20px; border-radius: 8px;">
+              <p>مرحباً <strong>${user.username}</strong>،</p>
+              <p>لقد طلبت استعادة كلمة المرور الخاصة بك. إليك كود التحقق:</p>
+              <div style="text-align: center; margin: 20px 0;">
+                <span style="font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #25D366; background: #e9edef; padding: 10px 20px; border-radius: 8px;">${code}</span>
+              </div>
+              <p>هذا الكود صالح لمدة 10 دقائق فقط. إذا لم تطلب هذا، يمكنك تجاهل هذه الرسالة.</p>
             </div>
-            <p>هذا الكود صالح لمدة 10 دقائق فقط. إذا لم تطلب هذا، يمكنك تجاهل هذه الرسالة.</p>
+            <p style="text-align: center; color: #667781; font-size: 12px; margin-top: 20px;">Wansa - تطبيق المحادثة الفورية</p>
           </div>
-          <p style="text-align: center; color: #667781; font-size: 12px; margin-top: 20px;">Wansa - تطبيق المحادثة الفورية</p>
-        </div>
-      `;
-      sendSmtpEmail.sender = { "name": "Wansa", "email": "noreply@wansa.app" };
-      sendSmtpEmail.to = [{ "email": user.email, "name": user.username }];
+        `,
+        sender: { name: "Wansa", email: "bdalhadymhmd712@gmail.com" }, // ⚠️ بريدك الموثق
+        to: [{ email: user.email, name: user.username }]
+      });
 
-      await apiInstance.sendTransacEmail(sendSmtpEmail);
       console.log(`✅ تم إرسال كود التحقق إلى ${user.email}`);
-
       res.json({ message: '✅ تم إرسال كود التحقق إلى بريدك الإلكتروني' });
 
     } catch (emailErr) {
       console.error('فشل إرسال البريد:', emailErr);
-      return res.status(500).json({ error: 'فشل إرسال البريد. يرجى المحاولة لاحقاً.' });
+      res.status(500).json({ 
+        error: 'فشل إرسال البريد: ' + (emailErr.body?.message || emailErr.message) 
+      });
     }
 
   } catch (err) {
